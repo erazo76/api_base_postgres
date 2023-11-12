@@ -1,0 +1,13 @@
+trigger:
+  - main
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: sharing/pipeline-azuredevops-yml-sharing
+      ref: 'refs/heads/conciliatory-app'
+
+extends:
+  template: master-extends.yml@templates
+  parameters:
+    technology: 'node'

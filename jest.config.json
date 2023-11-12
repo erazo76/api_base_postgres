@@ -1,0 +1,46 @@
+{
+  "moduleDirectories": [
+    "node_modules",
+    "src"
+  ],
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "testEnvironment": "node",
+  "testRegex": ".*\\.spec.ts$",
+  "transform": {
+    "^.+\\.ts$": "ts-jest"
+  },
+  "coverageDirectory": "./coverage",
+  "collectCoverage": true,
+  "collectCoverageFrom": [
+    "**/*.(t)s",
+    "!main.(t|j)s",
+    "!**/*.module.(t|j)s",
+    "!**/*.input.(t|j)s",
+    "!**/*.entity.(t|j)s",
+    "!**/*.strategy.(t|j)s",
+    "!**/*.dto.(t|j)s"
+  ],
+  "moduleNameMapper": {
+    "^@application(.*)$": "<rootDir>/src/application$1",
+    "^@presentation(.*)$": "<rootDir>/src/presentation$1",
+    "^@infrastructure(.*)$": "<rootDir>/src/infrastructure$1",
+    "^@domain(.*)$": "<rootDir>/src/domain$1",
+    "^csv-parse/sync": "<rootDir>/node_modules/csv-parse/dist/cjs/sync.cjs"
+  },
+  "coveragePathIgnorePatterns": [
+    "node_modules",
+    "test-config",
+    "interfaces",
+    "jestGlobalMocks.ts",
+    ".module.ts",
+    "<rootDir>/src/main.ts",
+    "<rootDir>/test",
+    ".mock.ts",
+    ".dto.ts",
+    ".entity.ts"
+  ]
+}

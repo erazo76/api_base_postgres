@@ -1,0 +1,6 @@
+export enum StatusEnum {
+  REQUESTED = "REQUESTED",
+  ROUTED = "ROUTED",
+  DELIVERED = "DELIVERED",
+  CANCELED = "CANCELED",
+}
