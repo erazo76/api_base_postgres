@@ -75,6 +75,29 @@ export class PurchasesController {
     return PurchaseVM.toViewModel(result);
   }
 
+  @Get("/:id/total")
+  @ApiOperation({
+    summary: "Find Purchase by id",
+  })
+  @ApiParam({
+    name: "id",
+    required: true,
+    description: "Id of purchase",
+    example: "875c18d4-ca31-4eca-a071-7ed942034497",
+  })
+  @ApiResponse({
+    description: "Found Purchase",
+    type: PurchaseVM,
+    status: 200,
+  })
+  async calculateTotal(@Param("id") purchaseId: string): Promise<number> {
+    const result = await this.PurchasesUseCase.calculateTotal(purchaseId).catch(
+      () => "Error alcalcular el total de la compra"
+    );
+    if (typeof result === "string") return { message: result } as any;
+    return result;
+  }
+
   @Post()
   @ApiOperation({
     summary: "Create purchase",

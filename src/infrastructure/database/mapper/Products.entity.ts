@@ -44,6 +44,12 @@ export class Products extends BaseEntity {
   })
   price: number;
 
+  @Column("float", {
+    name: "Cost",
+    nullable: true,
+  })
+  cost: number;
+
   @Column("integer", {
     name: "Stock",
   })

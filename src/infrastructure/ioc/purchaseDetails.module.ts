@@ -4,9 +4,11 @@ import { IPurchaseDetailsUseCase } from "application/ports/UseCases/PurchaseDeta
 import { PurchaseDetailsUseCase } from "application/use-cases/PurchaseDetailsUseCase/PurchaseDetailsUseCase";
 import { PurchaseDetailsRepository } from "infrastructure/database/repositories/PurchaseDetails.repository";
 import { PurchaseDetailsController } from "presentation/controllers/PurchaseDetailsController";
+import { ProductsModule } from "./products.module";
 
 @Module({
   controllers: [PurchaseDetailsController],
+  imports: [ProductsModule],
   providers: [
     {
       provide: IPurchaseDetailsRepository,

@@ -16,4 +16,10 @@ export abstract class IProductsUseCase {
   abstract updateProduct(ProductModel: Products): Promise<UpdateResult>;
 
   abstract deleteProduct(id: string): Promise<DeleteResult>;
+
+  abstract replenishStock(
+    id: string,
+    stock: number,
+    cost: number
+  ): Promise<any>;
 }

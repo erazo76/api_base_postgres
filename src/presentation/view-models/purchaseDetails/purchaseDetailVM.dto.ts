@@ -5,6 +5,30 @@ import { UserVM } from "../users/userVM.dto";
 import { ProductVM } from "../products/productVM.dto";
 import { PurchaseVM } from "../purchases/purchaseVM.dto";
 
+export class SimplifiedUserVM {
+  @Expose()
+  @ApiProperty({
+    description: "Name of buyer",
+    required: false,
+    example: "John Doe",
+    type: String,
+  })
+  name: string;
+
+  // Otros campos que desees exponer en esta versión simplificada
+
+  constructor(seller: UserVM) {
+    // Verifica si buyer no es undefined antes de acceder a sus propiedades
+    if (seller) {
+      this.name = seller.name;
+      // Asigna otros campos según sea necesario
+    } else {
+      // Si buyer es undefined, puedes asignar un valor predeterminado o manejarlo según tus necesidades
+      this.name = "N/A"; // O cualquier otro valor predeterminado
+    }
+  }
+}
+
 export class PurchaseDetailVM {
   @Expose()
   @ApiProperty({
@@ -25,6 +49,14 @@ export class PurchaseDetailVM {
 
   @Expose()
   @ApiProperty({
+    description: "Cost of product",
+    example: "12.5",
+    type: Number,
+  })
+  cost: number;
+
+  @Expose()
+  @ApiProperty({
     description: "Quantity of products",
     example: "12.5",
     type: Number,
@@ -42,14 +74,14 @@ export class PurchaseDetailVM {
   product: ProductVM;
 
   @Expose()
-  @Type(() => UserVM)
+  @Type(() => SimplifiedUserVM)
   @ApiProperty({
     description: "Id of userSeller",
     required: false,
     example: "d46f7074-5f44-44d2-8b79-92cb5d63bbc1",
-    type: String,
+    type: SimplifiedUserVM,
   })
-  seller: UserVM;
+  seller: SimplifiedUserVM;
 
   @Expose()
   @Type(() => PurchaseVM)

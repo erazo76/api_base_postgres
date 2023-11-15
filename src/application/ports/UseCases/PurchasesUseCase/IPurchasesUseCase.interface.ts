@@ -13,5 +13,7 @@ export abstract class IPurchasesUseCase {
 
   abstract updatePurchase(PurchaseModel: Purchases): Promise<UpdateResult>;
 
+  abstract calculateTotal(purchaseId: string): Promise<number>;
+
   abstract deletePurchase(id: string): Promise<DeleteResult>;
 }

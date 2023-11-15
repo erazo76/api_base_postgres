@@ -10,12 +10,12 @@ import { ProductsController } from "presentation/controllers/ProductsController"
   controllers: [ProductsController],
   providers: [
     {
-      provide: IProductsUseCase,
-      useClass: ProductsUseCase,
-    },
-    {
       provide: IProductsRepository,
       useClass: ProductsRepository,
+    },
+    {
+      provide: IProductsUseCase,
+      useClass: ProductsUseCase,
     },
   ],
   exports: [

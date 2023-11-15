@@ -54,6 +54,14 @@ export class ProductVM {
 
   @Expose()
   @ApiProperty({
+    description: "Cost of product",
+    example: "12.5",
+    type: Number,
+  })
+  cost: number;
+
+  @Expose()
+  @ApiProperty({
     description: "Stock of product",
     example: "100",
     type: Number,

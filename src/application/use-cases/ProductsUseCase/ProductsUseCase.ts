@@ -39,4 +39,16 @@ export class ProductsUseCase implements IProductsUseCase {
   deleteProduct(id: string): Promise<DeleteResult> {
     return this.categoriesRepo.delete(id);
   }
+
+  async replenishStock(id: string, stock: number, cost: number): Promise<any> {
+    try {
+      let model = await this.getProductById(id);
+      model.id = id;
+      model.stock += stock;
+      model.cost = cost;
+      return await this.updateProduct(model);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

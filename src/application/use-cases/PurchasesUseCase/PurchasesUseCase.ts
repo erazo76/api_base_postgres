@@ -3,7 +3,6 @@ import { IPurchasesRepository } from "application/ports/Repository/PurchasesRepo
 import { IPurchaseDetailsUseCase } from "application/ports/UseCases/PurchaseDetailsUseCase/IPurchaseDetailsUseCase.interface";
 import { IPurchasesUseCase } from "application/ports/UseCases/PurchasesUseCase/IPurchasesUseCase.interface";
 import { Page, PageMeta, PageOptions } from "infrastructure/common/page";
-import { PurchaseDetails } from "infrastructure/database/mapper/PurchaseDetails.entity";
 import { Purchases } from "infrastructure/database/mapper/Purchases.entity";
 import { DeleteResult, UpdateResult } from "typeorm";
 
@@ -18,7 +17,7 @@ export class PurchasesUseCase implements IPurchasesUseCase {
     const [purchases, count] = await this.purchasesRepo.findAndCount({
       skip: pageOpts.page - 1,
       take: pageOpts.take,
-      relations: ["buyer", "prDetail", "prDetail.seller"],
+      relations: ["buyer", "prDetail", "prDetail.seller", "prDetail.product"],
     });
     const pageMeta = new PageMeta(pageOpts, count);
     return new Page(purchases, pageMeta);
@@ -28,7 +27,7 @@ export class PurchasesUseCase implements IPurchasesUseCase {
     try {
       return await this.purchasesRepo.findOne({
         id: id,
-        relations: ["buyer"],
+        relations: ["buyer", "prDetail", "prDetail.seller", "prDetail.product"],
         select: ["id", "status", "total", "createdAt"],
       });
     } catch (error) {
@@ -36,31 +35,22 @@ export class PurchasesUseCase implements IPurchasesUseCase {
     }
   }
 
-  async createPurchase(moduleModel: Purchases): Promise<Purchases> {
-    console.log(moduleModel);
-
-    const purchase = await this.purchasesRepo.save(moduleModel);
-
-    purchase.prDetail.forEach((detail) => {
-      detail.id = purchase.id;
-    });
-
-    // Guardar los detalles de compra actualizados
-    await Promise.all(
-      purchase.prDetail.map(async (e) => {
-        await this.purchaseDetail.createPurchaseDetail(e);
-      })
+  async calculateTotal(purchaseId: string): Promise<number> {
+    const detail = await this.purchaseDetail.getPurchaseDetailByPurchaseId(
+      purchaseId
     );
 
-    // Calcular el total y actualizar la compra
-    purchase.total = this.calculateDetail(purchase.prDetail);
-    await this.purchasesRepo.save(purchase);
-
-    return purchase;
+    const total = detail.reduce((init, ended) => init + ended.subtotal, 0);
+    let model = new Purchases();
+    model.id = purchaseId;
+    model.total = total;
+    await this.updatePurchase(model);
+    return total;
   }
 
-  calculateDetail(datum: PurchaseDetails[]): number {
-    return datum.reduce((alpha, beta) => alpha + beta.subtotal, 0);
+  async createPurchase(moduleModel: Purchases): Promise<Purchases> {
+    console.log(moduleModel);
+    return await this.purchasesRepo.save(moduleModel);
   }
 
   updatePurchase(moduleModel: Purchases): Promise<UpdateResult> {

@@ -11,6 +11,10 @@ export abstract class IPurchaseDetailsUseCase {
 
   abstract getPurchaseDetailById(id: string): Promise<PurchaseDetails>;
 
+  abstract getPurchaseDetailByPurchaseId(
+    id: string
+  ): Promise<PurchaseDetails[]>;
+
   abstract createPurchaseDetail(
     PurchaseDetailModel: PurchaseDetails
   ): Promise<PurchaseDetails>;

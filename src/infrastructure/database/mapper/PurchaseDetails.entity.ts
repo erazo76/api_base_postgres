@@ -19,6 +19,12 @@ export class PurchaseDetails extends BaseEntity {
   })
   subtotal: number;
 
+  @Column("float", {
+    name: "Cost",
+    nullable: true,
+  })
+  cost: number;
+
   @Column("integer", {
     name: "Quantity",
   })

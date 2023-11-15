@@ -8,9 +8,11 @@ import { IPurchaseDetailsRepository } from "application/ports/Repository/Purchas
 import { PurchaseDetailsRepository } from "infrastructure/database/repositories/PurchaseDetails.repository";
 import { IPurchaseDetailsUseCase } from "application/ports/UseCases/PurchaseDetailsUseCase/IPurchaseDetailsUseCase.interface";
 import { PurchaseDetailsUseCase } from "application/use-cases/PurchaseDetailsUseCase/PurchaseDetailsUseCase";
+import { ProductsModule } from "./products.module";
 
 @Module({
   controllers: [PurchasesController],
+  imports: [ProductsModule],
   providers: [
     {
       provide: IPurchasesRepository,

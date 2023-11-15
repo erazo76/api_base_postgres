@@ -24,6 +24,7 @@ import { PaginateQueryVM } from "presentation/view-models/shared/paginateQuery.d
 import { ProductVM } from "presentation/view-models/products/productVM.dto";
 import { CreateProductVM } from "presentation/view-models/products/createProduct.dto";
 import { UpdateProductVM } from "presentation/view-models/products/updateProduct.dto";
+import { ReplenishStockVM } from "presentation/view-models/products/replenishStock.dto";
 
 @ApiTags("Products")
 @Controller("Products")
@@ -71,6 +72,34 @@ export class ProductsController {
     );
     if (typeof result === "string") return { message: result } as any;
     return ProductVM.toViewModel(result);
+  }
+
+  @Post("/:id/replenish")
+  @ApiOperation({
+    summary: "Find Product by id",
+  })
+  @ApiParam({
+    name: "id",
+    required: true,
+    description: "Id of product",
+    example: "875c18d4-ca31-4eca-a071-7ed942034497",
+  })
+  @ApiResponse({
+    description: "Found Product",
+    type: ProductVM,
+    status: 200,
+  })
+  async replenishStock(
+    @Param("id") productId: string,
+    @Body() body: ReplenishStockVM
+  ): Promise<any> {
+    const result = await this.ProductsUseCase.replenishStock(
+      productId,
+      body.stock,
+      body.cost
+    ).catch(() => "Error al reponer existencias");
+    if (typeof result === "string") return { message: result } as any;
+    return result;
   }
 
   @Post()

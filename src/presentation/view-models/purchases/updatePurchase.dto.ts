@@ -10,7 +10,6 @@ import {
   IsString,
   Matches,
 } from "class-validator";
-import { PurchaseDetails } from "infrastructure/database/mapper/PurchaseDetails.entity";
 import { Purchases } from "infrastructure/database/mapper/Purchases.entity";
 
 export class UpdatePurchaseVM {
@@ -69,15 +68,6 @@ export class UpdatePurchaseVM {
     type: String,
   })
   buyer: string;
-
-  @Expose()
-  @ApiProperty({
-    description: "Id of userBuyer",
-    required: false,
-    example: "d46f7074-5f44-44d2-8b79-92cb5d63bbc1",
-    type: String,
-  })
-  prDetail: Array<PurchaseDetails>;
 
   static toViewModel(module: Purchases): UpdatePurchaseVM {
     return plainToClass(UpdatePurchaseVM, module, {

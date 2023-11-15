@@ -4,6 +4,30 @@ import { Purchases } from "infrastructure/database/mapper/Purchases.entity";
 import { UserVM } from "../users/userVM.dto";
 import { PurchaseDetailVM } from "../purchaseDetails/purchaseDetailVM.dto";
 
+export class SimplifiedUserVM {
+  @Expose()
+  @ApiProperty({
+    description: "Name of buyer",
+    required: false,
+    example: "John Doe",
+    type: String,
+  })
+  name: string;
+
+  // Otros campos que desees exponer en esta versión simplificada
+
+  constructor(buyer: UserVM) {
+    // Verifica si buyer no es undefined antes de acceder a sus propiedades
+    if (buyer) {
+      this.name = buyer.name;
+      // Asigna otros campos según sea necesario
+    } else {
+      // Si buyer es undefined, puedes asignar un valor predeterminado o manejarlo según tus necesidades
+      this.name = "N/A"; // O cualquier otro valor predeterminado
+    }
+  }
+}
+
 export class PurchaseVM {
   @Expose()
   @ApiProperty({
@@ -40,14 +64,14 @@ export class PurchaseVM {
   active: boolean = true;
 
   @Expose()
-  @Type(() => UserVM)
+  @Type(() => SimplifiedUserVM)
   @ApiProperty({
     description: "Id of userBuyer",
     required: false,
     example: "d46f7074-5f44-44d2-8b79-92cb5d63bbc1",
-    type: String,
+    type: SimplifiedUserVM,
   })
-  buyer: UserVM;
+  buyer: SimplifiedUserVM;
 
   @Expose()
   @Type(() => PurchaseDetailVM)
