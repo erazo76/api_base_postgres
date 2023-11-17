@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import {
   ApiOkResponse,
@@ -25,12 +26,19 @@ import { ProductVM } from "presentation/view-models/products/productVM.dto";
 import { CreateProductVM } from "presentation/view-models/products/createProduct.dto";
 import { UpdateProductVM } from "presentation/view-models/products/updateProduct.dto";
 import { ReplenishStockVM } from "presentation/view-models/products/replenishStock.dto";
+import { JwtAuthGuard } from "infrastructure/guards/jwt.guard";
+import { RolesGuard } from "infrastructure/guards/roles.guard";
+import { RoleEnum } from "infrastructure/enums/role.enum";
+import { Roles } from "infrastructure/decorators/roles.decorator";
+import { Public } from "infrastructure/decorators/public.decorator";
 
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("Products")
 @Controller("Products")
 export class ProductsController {
   constructor(private readonly ProductsUseCase: IProductsUseCase) {}
 
+  @Public()
   @Get()
   @ApiOperation({
     summary: "Find all Products.",
@@ -51,6 +59,7 @@ export class ProductsController {
     return result;
   }
 
+  @Public()
   @Get("/:id")
   @ApiOperation({
     summary: "Find Product by id",
@@ -74,6 +83,7 @@ export class ProductsController {
     return ProductVM.toViewModel(result);
   }
 
+  @Roles(RoleEnum.ADMIN)
   @Post("/:id/replenish")
   @ApiOperation({
     summary: "Find Product by id",
@@ -102,6 +112,7 @@ export class ProductsController {
     return result;
   }
 
+  @Roles(RoleEnum.ADMIN)
   @Post()
   @ApiOperation({
     summary: "Create product",
@@ -135,6 +146,7 @@ export class ProductsController {
     return ProductVM.toViewModel(result);
   }
 
+  @Roles(RoleEnum.ADMIN)
   @Put("/:id")
   @ApiOperation({
     summary: "Update product",
@@ -183,6 +195,7 @@ export class ProductsController {
     return vm;
   }
 
+  @Roles(RoleEnum.ADMIN)
   @Delete("/:id")
   @ApiOperation({
     summary: "Delete a product",

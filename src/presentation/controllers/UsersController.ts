@@ -32,6 +32,7 @@ import { JwtAuthGuard } from "infrastructure/guards/jwt.guard";
 import { RolesGuard } from "infrastructure/guards/roles.guard";
 import { Roles } from "infrastructure/decorators/roles.decorator";
 import { RoleEnum } from "infrastructure/enums/role.enum";
+import { Public } from "infrastructure/decorators/public.decorator";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("Users")
@@ -57,7 +58,7 @@ export class UsersController {
     return PagVM.toViewModel<UserVM>(metarules, result[1]);
   }
 
-  @Roles(RoleEnum.ADMIN, RoleEnum.SELLER, RoleEnum.CLIENT)
+  @Public()
   @Get("/:id")
   @ApiOperation({
     summary: "Find User of id",
@@ -81,7 +82,7 @@ export class UsersController {
     return UserVM.toViewModel(result);
   }
 
-  @Roles(RoleEnum.ADMIN, RoleEnum.SELLER, RoleEnum.CLIENT)
+  @Public()
   @Post()
   @ApiOperation({
     summary: "Create user",

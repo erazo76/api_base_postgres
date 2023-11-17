@@ -43,9 +43,9 @@ export class PurchasesUseCase implements IPurchasesUseCase {
     const total = detail.reduce((init, ended) => init + ended.subtotal, 0);
     let model = new Purchases();
     model.id = purchaseId;
-    model.total = total;
+    model.total = Math.round(total * 100) / 100;
     await this.updatePurchase(model);
-    return total;
+    return Math.round(total * 100) / 100;
   }
 
   async createPurchase(moduleModel: Purchases): Promise<Purchases> {

@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import {
   ApiOkResponse,
@@ -17,7 +18,6 @@ import {
   ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
 import { UnprocessableEntityError } from "presentation/errors/UnprocessableEntityError";
-
 import { UpdateCategorieVM } from "presentation/view-models/categories/updateCategory.dto";
 import { CategorieVM } from "presentation/view-models/categories/categoryVM.dto";
 import { Categories } from "infrastructure/database/mapper/Categories.entity";
@@ -25,12 +25,18 @@ import { ICategoriesUseCase } from "application/ports/UseCases/CategoriesUseCase
 import { Page, PageOptions } from "infrastructure/common/page";
 import { PaginateQueryVM } from "presentation/view-models/shared/paginateQuery.dto";
 import { CreateCategorieVM } from "presentation/view-models/categories/createCategory.dto";
+import { JwtAuthGuard } from "infrastructure/guards/jwt.guard";
+import { RolesGuard } from "infrastructure/guards/roles.guard";
+import { Roles } from "infrastructure/decorators/roles.decorator";
+import { RoleEnum } from "infrastructure/enums/role.enum";
 
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("Categories")
 @Controller("Categories")
 export class CategoriesController {
   constructor(private readonly CategoriesUseCase: ICategoriesUseCase) {}
 
+  @Roles(RoleEnum.ADMIN, RoleEnum.CLIENT, RoleEnum.SELLER)
   @Get()
   @ApiOperation({
     summary: "Find all Categories.",
@@ -53,6 +59,7 @@ export class CategoriesController {
     return result;
   }
 
+  @Roles(RoleEnum.ADMIN, RoleEnum.CLIENT, RoleEnum.SELLER)
   @Get("/:id")
   @ApiOperation({
     summary: "Find Category by id",
@@ -78,6 +85,7 @@ export class CategoriesController {
     return CategorieVM.toViewModel(result);
   }
 
+  @Roles(RoleEnum.ADMIN)
   @Post()
   @ApiOperation({
     summary: "Create category",
@@ -111,6 +119,7 @@ export class CategoriesController {
     return result;
   }
 
+  @Roles(RoleEnum.ADMIN)
   @Put("/:id")
   @ApiOperation({
     summary: "Update category",
@@ -161,6 +170,7 @@ export class CategoriesController {
     return vm;
   }
 
+  @Roles(RoleEnum.ADMIN)
   @Delete("/:id")
   @ApiOperation({
     summary: "Delete a category",

@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import {
   ApiOkResponse,
@@ -24,7 +25,13 @@ import { PaginateQueryVM } from "presentation/view-models/shared/paginateQuery.d
 import { CreatePurchaseDetailVM } from "presentation/view-models/purchaseDetails/createPurchaseDetail.dto";
 import { UpdatePurchaseDetailVM } from "presentation/view-models/purchaseDetails/updatePurchaseDetail.dto";
 import { PurchaseDetailVM } from "presentation/view-models/purchaseDetails/purchaseDetailVM.dto";
+import { JwtAuthGuard } from "infrastructure/guards/jwt.guard";
+import { RolesGuard } from "infrastructure/guards/roles.guard";
+import { Public } from "infrastructure/decorators/public.decorator";
+import { Roles } from "infrastructure/decorators/roles.decorator";
+import { RoleEnum } from "infrastructure/enums/role.enum";
 
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("PurchaseDetails")
 @Controller("PurchaseDetails")
 export class PurchaseDetailsController {
@@ -32,6 +39,7 @@ export class PurchaseDetailsController {
     private readonly PurchaseDetailsUseCase: IPurchaseDetailsUseCase
   ) {}
 
+  @Public()
   @Get()
   @ApiOperation({
     summary: "Find all PurchaseDetails.",
@@ -54,6 +62,7 @@ export class PurchaseDetailsController {
     return result;
   }
 
+  @Public()
   @Get("/:id")
   @ApiOperation({
     summary: "Find PurchaseDetail by id",
@@ -79,6 +88,7 @@ export class PurchaseDetailsController {
     return PurchaseDetailVM.toViewModel(result);
   }
 
+  @Public()
   @Post()
   @ApiOperation({
     summary: "Create purchaseDetail",
@@ -103,6 +113,7 @@ export class PurchaseDetailsController {
     return PurchaseDetailVM.toViewModel(result);
   }
 
+  @Roles(RoleEnum.ADMIN)
   @Put("/:id")
   @ApiOperation({
     summary: "Update purchaseDetail",
@@ -140,6 +151,7 @@ export class PurchaseDetailsController {
     return vm;
   }
 
+  @Roles(RoleEnum.ADMIN)
   @Delete("/:id")
   @ApiOperation({
     summary: "Delete a purchaseDetail",

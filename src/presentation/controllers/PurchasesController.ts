@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import {
   ApiOkResponse,
@@ -24,12 +25,19 @@ import { PaginateQueryVM } from "presentation/view-models/shared/paginateQuery.d
 import { PurchaseVM } from "presentation/view-models/purchases/purchaseVM.dto";
 import { CreatePurchaseVM } from "presentation/view-models/purchases/createPurchase.dto";
 import { UpdatePurchaseVM } from "presentation/view-models/purchases/updatePurchase.dto";
+import { JwtAuthGuard } from "infrastructure/guards/jwt.guard";
+import { RolesGuard } from "infrastructure/guards/roles.guard";
+import { Public } from "infrastructure/decorators/public.decorator";
+import { Roles } from "infrastructure/decorators/roles.decorator";
+import { RoleEnum } from "infrastructure/enums/role.enum";
 
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("Purchases")
 @Controller("Purchases")
 export class PurchasesController {
   constructor(private readonly PurchasesUseCase: IPurchasesUseCase) {}
 
+  @Roles(RoleEnum.ADMIN)
   @Get()
   @ApiOperation({
     summary: "Find all Purchases.",
@@ -52,6 +60,7 @@ export class PurchasesController {
     return result;
   }
 
+  @Public()
   @Get("/:id")
   @ApiOperation({
     summary: "Find Purchase by id",
@@ -75,6 +84,7 @@ export class PurchasesController {
     return PurchaseVM.toViewModel(result);
   }
 
+  @Public()
   @Get("/:id/total")
   @ApiOperation({
     summary: "Find Purchase by id",
@@ -98,6 +108,7 @@ export class PurchasesController {
     return result;
   }
 
+  @Public()
   @Post()
   @ApiOperation({
     summary: "Create purchase",
@@ -123,6 +134,7 @@ export class PurchasesController {
     return PurchaseVM.toViewModel(result);
   }
 
+  @Public()
   @Put("/:id")
   @ApiOperation({
     summary: "Update purchase",
@@ -160,6 +172,7 @@ export class PurchasesController {
     return vm;
   }
 
+  @Public()
   @Delete("/:id")
   @ApiOperation({
     summary: "Delete a purchase",
