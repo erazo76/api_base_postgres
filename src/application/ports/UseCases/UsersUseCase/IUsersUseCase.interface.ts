@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { Page, PageOptions } from "infrastructure/common/page";
 import { Users } from "infrastructure/database/mapper/Users.entity";
 import { DeleteResult, UpdateResult } from "typeorm";
 
@@ -10,7 +11,7 @@ export abstract class IUsersUseCase {
 
   abstract getUserByUserNameOrEmail(userName: string): Promise<Users>;
 
-  abstract getUsersPag(take: number, pag: number): Promise<[Users[], number]>;
+  abstract getUsersPag(pageOpts: PageOptions): Promise<Page<Users>>;
 
   abstract createUser(UserModel: Users): Promise<Users>;
 

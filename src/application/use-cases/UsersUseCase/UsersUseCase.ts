@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { IUsersRepository } from "application/ports/Repository/UsersRepository/IUsersRepository.interface";
 import { IUsersUseCase } from "application/ports/UseCases/UsersUseCase/IUsersUseCase.interface";
+import { Page, PageMeta, PageOptions } from "infrastructure/common/page";
 import { Users } from "infrastructure/database/mapper/Users.entity";
-
 import { DeleteResult, UpdateResult } from "typeorm";
 
 @Injectable()
@@ -23,11 +23,13 @@ export class UsersUseCase implements IUsersUseCase {
     });
   }
 
-  getUsersPag(take: number, skip: number): Promise<[Users[], number]> {
-    return this.usersRepo.findAndCount({
-      take,
-      skip,
+  async getUsersPag(pageOpts: PageOptions): Promise<Page<Users>> {
+    const [users, count] = await this.usersRepo.findAndCount({
+      skip: (pageOpts.page - 1) * pageOpts.take,
+      take: pageOpts.take,
     });
+    const pageMeta = new PageMeta(pageOpts, count);
+    return new Page(users, pageMeta);
   }
 
   async createUser(moduleModel: Users): Promise<Users> {

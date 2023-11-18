@@ -12,7 +12,7 @@ export class CategoriesUseCase implements ICategoriesUseCase {
 
   async getCategories(pageOpts: PageOptions): Promise<Page<Categories>> {
     const [categories, count] = await this.categoriesRepo.findAndCount({
-      skip: pageOpts.page - 1,
+      skip: (pageOpts.page - 1) * pageOpts.take,
       take: pageOpts.take,
     });
     const pageMeta = new PageMeta(pageOpts, count);

@@ -19,7 +19,7 @@ export class PurchaseDetailsUseCase implements IPurchaseDetailsUseCase {
     pageOpts: PageOptions
   ): Promise<Page<PurchaseDetails>> {
     const [purchases, count] = await this.purchaseDetailsRepo.findAndCount({
-      skip: pageOpts.page - 1,
+      skip: (pageOpts.page - 1) * pageOpts.take,
       take: pageOpts.take,
       relations: ["detail", "seller", "product", "product.category"],
     });

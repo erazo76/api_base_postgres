@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 import {
   FindManyOptions,
   FindConditions,
@@ -10,10 +10,11 @@ import {
   DeleteResult,
   InsertResult,
   RemoveOptions,
-} from 'typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+} from "typeorm";
+import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
-type updateType = string
+type updateType =
+  | string
   | string[]
   | number
   | number[]
@@ -24,7 +25,6 @@ type updateType = string
 
 @Injectable()
 export abstract class IRepository<Entity> {
-
   abstract hasId(entity: Entity): boolean;
 
   abstract getId(entity: Entity): any;
@@ -38,7 +38,7 @@ export abstract class IRepository<Entity> {
   abstract create(
     plainEntityLikeOrPlainEntityLikes?:
       | DeepPartial<Entity>
-      | DeepPartial<Entity>[],
+      | DeepPartial<Entity>[]
   ): Entity | Entity[];
 
   abstract merge(
@@ -47,120 +47,115 @@ export abstract class IRepository<Entity> {
   ): Entity;
 
   abstract preload(
-    entityLike: DeepPartial<Entity>,
+    entityLike: DeepPartial<Entity>
   ): Promise<Entity | undefined>;
 
   abstract save<T extends DeepPartial<Entity>>(
     entities: T[],
-    options: SaveOptions & { reload: false },
+    options: SaveOptions & { reload: false }
   ): Promise<T[]>;
 
   abstract save<T extends DeepPartial<Entity>>(
     entities: T[],
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<(T & Entity)[]>;
 
   abstract save<T extends DeepPartial<Entity>>(
     entity: T,
-    options: SaveOptions & { reload: false },
+    options: SaveOptions & { reload: false }
   ): Promise<T>;
 
   abstract save<T extends DeepPartial<Entity>>(
     entity: T,
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<T & Entity>;
 
   abstract save<T extends DeepPartial<Entity>>(
     entityOrEntities: T | T[],
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<T | T[]>;
 
   abstract remove(
     entities: Entity[],
-    options?: RemoveOptions,
+    options?: RemoveOptions
   ): Promise<Entity[]>;
 
   abstract remove(entity: Entity, options?: RemoveOptions): Promise<Entity>;
 
   abstract remove(
     entityOrEntities: Entity | Entity[],
-    options?: RemoveOptions,
+    options?: RemoveOptions
   ): Promise<Entity | Entity[]>;
 
   abstract softRemove<T extends DeepPartial<Entity>>(
     entities: T[],
-    options: SaveOptions & { reload: false },
+    options: SaveOptions & { reload: false }
   ): Promise<T[]>;
 
   abstract softRemove<T extends DeepPartial<Entity>>(
     entities: T[],
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<(T & Entity)[]>;
 
   abstract softRemove<T extends DeepPartial<Entity>>(
     entity: T,
-    options: SaveOptions & { reload: false },
+    options: SaveOptions & { reload: false }
   ): Promise<T>;
 
   abstract softRemove<T extends DeepPartial<Entity>>(
     entity: T,
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<T & Entity>;
 
   abstract softRemove<T extends DeepPartial<Entity>>(
     entityOrEntities: T | T[],
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<T | T[]>;
 
   abstract recover<T extends DeepPartial<Entity>>(
     entities: T[],
-    options: SaveOptions & { reload: false },
+    options: SaveOptions & { reload: false }
   ): Promise<T[]>;
 
   abstract recover<T extends DeepPartial<Entity>>(
     entities: T[],
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<(T & Entity)[]>;
 
   abstract recover<T extends DeepPartial<Entity>>(
     entity: T,
-    options: SaveOptions & { reload: false },
+    options: SaveOptions & { reload: false }
   ): Promise<T>;
 
   abstract recover<T extends DeepPartial<Entity>>(
     entity: T,
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<T & Entity>;
 
   abstract recover<T extends DeepPartial<Entity>>(
     entityOrEntities: T | T[],
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<T | T[]>;
 
   abstract insert(
-    entity: QueryDeepPartialEntity<Entity> | QueryDeepPartialEntity<Entity>[],
+    entity: QueryDeepPartialEntity<Entity> | QueryDeepPartialEntity<Entity>[]
   ): Promise<InsertResult>;
 
   abstract update(
-    criteria: updateType
-      | FindConditions<Entity>
-    ,
-    partialEntity: QueryDeepPartialEntity<Entity>,
+    criteria: updateType | FindConditions<Entity>,
+    partialEntity: QueryDeepPartialEntity<Entity>
   ): Promise<UpdateResult>;
 
   abstract delete(
-    criteria: updateType
-      | FindConditions<Entity>,
+    criteria: updateType | FindConditions<Entity>
   ): Promise<DeleteResult>;
 
   abstract softDelete(
-    criteria: updateType
-      | FindConditions<Entity>,
+    criteria: updateType | FindConditions<Entity>
   ): Promise<UpdateResult>;
 
   abstract restore(
-    criteria: updateType
-      | FindConditions<Entity>,
+    criteria: updateType | FindConditions<Entity>
   ): Promise<UpdateResult>;
 
   abstract count(options?: FindManyOptions<Entity>): Promise<number>;
@@ -168,7 +163,7 @@ export abstract class IRepository<Entity> {
   abstract count(conditions?: FindConditions<Entity>): Promise<number>;
 
   abstract count(
-    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>,
+    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>
   ): Promise<number>;
 
   abstract find(options?: FindManyOptions<Entity>): Promise<Entity[]>;
@@ -176,48 +171,48 @@ export abstract class IRepository<Entity> {
   abstract find(conditions?: FindConditions<Entity>): Promise<Entity[]>;
 
   abstract find(
-    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>,
+    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>
   ): Promise<Entity[]>;
 
   abstract findAndCount(
-    options?: FindManyOptions<Entity>,
+    options?: FindManyOptions<Entity>
   ): Promise<[Entity[], number]>;
 
   abstract findAndCount(
-    conditions?: FindConditions<Entity>,
+    conditions?: FindConditions<Entity>
   ): Promise<[Entity[], number]>;
 
   abstract findAndCount(
-    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>,
+    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>
   ): Promise<[Entity[], number]>;
 
   abstract findByIds(
     ids: any[],
-    options?: FindManyOptions<Entity>,
+    options?: FindManyOptions<Entity>
   ): Promise<Entity[]>;
 
   abstract findByIds(
     ids: any[],
-    conditions?: FindConditions<Entity>,
+    conditions?: FindConditions<Entity>
   ): Promise<Entity[]>;
 
   abstract findByIds(
     ids: any[],
-    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>,
+    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>
   ): Promise<Entity[]>;
 
   abstract findOne(
     id?: string | number | Date | ObjectID,
-    options?: FindOneOptions<Entity>,
+    options?: FindOneOptions<Entity>
   ): Promise<Entity | undefined>;
 
   abstract findOne(
-    options?: FindOneOptions<Entity>,
+    options?: FindOneOptions<Entity>
   ): Promise<Entity | undefined>;
 
   abstract findOne(
     conditions?: FindConditions<Entity>,
-    options?: FindOneOptions<Entity>,
+    options?: FindOneOptions<Entity>
   ): Promise<Entity | undefined>;
 
   abstract findOne(
@@ -228,19 +223,19 @@ export abstract class IRepository<Entity> {
       | ObjectID
       | FindOneOptions<Entity>
       | FindConditions<Entity>,
-    maybeOptions?: FindOneOptions<Entity>,
+    maybeOptions?: FindOneOptions<Entity>
   ): Promise<Entity | undefined>;
 
   abstract findOneOrFail(
     id?: string | number | Date | ObjectID,
-    options?: FindOneOptions<Entity>,
+    options?: FindOneOptions<Entity>
   ): Promise<Entity>;
 
   abstract findOneOrFail(options?: FindOneOptions<Entity>): Promise<Entity>;
 
   abstract findOneOrFail(
     conditions?: FindConditions<Entity>,
-    options?: FindOneOptions<Entity>,
+    options?: FindOneOptions<Entity>
   ): Promise<Entity>;
 
   abstract findOneOrFail(
@@ -251,7 +246,7 @@ export abstract class IRepository<Entity> {
       | ObjectID
       | FindOneOptions<Entity>
       | FindConditions<Entity>,
-    maybeOptions?: FindOneOptions<Entity>,
+    maybeOptions?: FindOneOptions<Entity>
   ): Promise<Entity>;
 
   abstract query(query: string, parameters?: any[]): Promise<any>;
@@ -261,13 +256,13 @@ export abstract class IRepository<Entity> {
   abstract increment(
     conditions: FindConditions<Entity>,
     propertyPath: string,
-    value: number | string,
+    value: number | string
   ): Promise<UpdateResult>;
 
   abstract decrement(
     conditions: FindConditions<Entity>,
     propertyPath: string,
-    value: number | string,
+    value: number | string
   ): Promise<UpdateResult>;
 
   abstract transaction<T>(operation: () => Promise<T>): Promise<T>;

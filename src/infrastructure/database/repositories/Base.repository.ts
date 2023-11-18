@@ -1,4 +1,4 @@
-import { IRepository } from 'application/ports/Repository/IRepository.interface';
+import { IRepository } from "application/ports/Repository/IRepository.interface";
 import {
   ObjectLiteral,
   EntityManager,
@@ -15,10 +15,11 @@ import {
   FindOneOptions,
   Connection,
   EntityTarget,
-} from 'typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+} from "typeorm";
+import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
-type updateType = string
+type updateType =
+  | string
   | string[]
   | number
   | number[]
@@ -27,8 +28,8 @@ type updateType = string
   | ObjectID
   | ObjectID[];
 
-
-export class BaseRepository<Entity extends ObjectLiteral> implements IRepository<Entity> {
+export class BaseRepository<Entity extends ObjectLiteral>
+  implements IRepository<Entity> {
   readonly manager: EntityManager;
   readonly queryRunner?: QueryRunner;
   readonly entity: EntityTarget<Entity>;
@@ -56,11 +57,11 @@ export class BaseRepository<Entity extends ObjectLiteral> implements IRepository
   create(
     plainEntityLikeOrPlainEntityLikes?:
       | DeepPartial<Entity>
-      | DeepPartial<Entity>[],
+      | DeepPartial<Entity>[]
   ): Entity | Entity[] {
     return this.manager.create<any>(
       this.entity as any,
-      plainEntityLikeOrPlainEntityLikes as any,
+      plainEntityLikeOrPlainEntityLikes as any
     );
   }
 
@@ -71,7 +72,7 @@ export class BaseRepository<Entity extends ObjectLiteral> implements IRepository
     return this.manager.merge(
       this.entity as any,
       mergeIntoEntity,
-      ...entityLikes,
+      ...entityLikes
     );
   }
 
@@ -81,32 +82,32 @@ export class BaseRepository<Entity extends ObjectLiteral> implements IRepository
 
   save<T extends DeepPartial<Entity>>(
     entities: T[],
-    options: SaveOptions & { reload: false },
+    options: SaveOptions & { reload: false }
   ): Promise<T[]>;
 
   save<T extends DeepPartial<Entity>>(
     entities: T[],
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<(T & Entity)[]>;
 
   save<T extends DeepPartial<Entity>>(
     entity: T,
-    options: SaveOptions & { reload: false },
+    options: SaveOptions & { reload: false }
   ): Promise<T>;
 
   save<T extends DeepPartial<Entity>>(
     entity: T,
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<T & Entity>;
 
   save<T extends DeepPartial<Entity>>(
     entityOrEntities: T | T[],
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<T | T[]> {
     return this.manager.save<Entity, T>(
       this.entity as any,
       entityOrEntities as any,
-      options,
+      options
     );
   }
 
@@ -116,112 +117,106 @@ export class BaseRepository<Entity extends ObjectLiteral> implements IRepository
 
   remove(
     entityOrEntities: Entity | Entity[],
-    options?: RemoveOptions,
+    options?: RemoveOptions
   ): Promise<Entity | Entity[]> {
     return this.manager.remove(
       this.entity as any,
       entityOrEntities as any,
-      options,
+      options
     );
   }
 
   softRemove<T extends DeepPartial<Entity>>(
     entities: T[],
-    options: SaveOptions & { reload: false },
+    options: SaveOptions & { reload: false }
   ): Promise<T[]>;
 
   softRemove<T extends DeepPartial<Entity>>(
     entities: T[],
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<(T & Entity)[]>;
 
   softRemove<T extends DeepPartial<Entity>>(
     entity: T,
-    options: SaveOptions & { reload: false },
+    options: SaveOptions & { reload: false }
   ): Promise<T>;
 
   softRemove<T extends DeepPartial<Entity>>(
     entity: T,
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<T & Entity>;
 
   softRemove<T extends DeepPartial<Entity>>(
     entityOrEntities: T | T[],
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<T | T[]> {
     return this.manager.softRemove<Entity, T>(
       this.entity as any,
       entityOrEntities as any,
-      options,
+      options
     );
   }
 
   recover<T extends DeepPartial<Entity>>(
     entities: T[],
-    options: SaveOptions & { reload: false },
+    options: SaveOptions & { reload: false }
   ): Promise<T[]>;
 
   recover<T extends DeepPartial<Entity>>(
     entities: T[],
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<(T & Entity)[]>;
 
   recover<T extends DeepPartial<Entity>>(
     entity: T,
-    options: SaveOptions & { reload: false },
+    options: SaveOptions & { reload: false }
   ): Promise<T>;
 
   recover<T extends DeepPartial<Entity>>(
     entity: T,
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<T & Entity>;
 
   recover<T extends DeepPartial<Entity>>(
     entityOrEntities: T | T[],
-    options?: SaveOptions,
+    options?: SaveOptions
   ): Promise<T | T[]> {
     return this.manager.recover<Entity, T>(
       this.entity as any,
       entityOrEntities as any,
-      options,
+      options
     );
   }
 
   insert(
-    entity: QueryDeepPartialEntity<Entity> | QueryDeepPartialEntity<Entity>[],
+    entity: QueryDeepPartialEntity<Entity> | QueryDeepPartialEntity<Entity>[]
   ): Promise<InsertResult> {
     return this.manager.insert(this.entity as any, entity);
   }
 
   update(
-    criteria: updateType
-      | FindConditions<Entity>,
-    partialEntity: QueryDeepPartialEntity<Entity>,
+    criteria: updateType | FindConditions<Entity>,
+    partialEntity: QueryDeepPartialEntity<Entity>
   ): Promise<UpdateResult> {
     return this.manager.update(
       this.entity as any,
       criteria as any,
-      partialEntity,
+      partialEntity
     );
   }
 
-  delete(
-    criteria: updateType
-      | FindConditions<Entity>,
-  ): Promise<DeleteResult> {
+  delete(criteria: updateType | FindConditions<Entity>): Promise<DeleteResult> {
     return this.manager.delete(this.entity as any, criteria as any);
   }
 
   softDelete(
-    criteria: updateType
-      | FindConditions<Entity>,
+    criteria: updateType | FindConditions<Entity>
   ): Promise<UpdateResult> {
     return this.manager.softDelete(this.entity as any, criteria as any);
   }
 
   restore(
-    criteria: updateType
-      | FindConditions<Entity>,
+    criteria: updateType | FindConditions<Entity>
   ): Promise<UpdateResult> {
     return this.manager.restore(this.entity as any, criteria as any);
   }
@@ -231,12 +226,9 @@ export class BaseRepository<Entity extends ObjectLiteral> implements IRepository
   count(conditions?: FindConditions<Entity>): Promise<number>;
 
   count(
-    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>,
+    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>
   ): Promise<number> {
-    return this.manager.count(
-      this.entity as any,
-      optionsOrConditions as any,
-    );
+    return this.manager.count(this.entity as any, optionsOrConditions as any);
   }
 
   find(options?: FindManyOptions<Entity>): Promise<Entity[]>;
@@ -244,26 +236,23 @@ export class BaseRepository<Entity extends ObjectLiteral> implements IRepository
   find(conditions?: FindConditions<Entity>): Promise<Entity[]>;
 
   find(
-    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>,
+    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>
   ): Promise<Entity[]> {
-    return this.manager.find<Entity>(
-      this.entity,
-      optionsOrConditions as any,
-    );
+    return this.manager.find<Entity>(this.entity, optionsOrConditions as any);
   }
 
   findAndCount(options?: FindManyOptions<Entity>): Promise<[Entity[], number]>;
 
   findAndCount(
-    conditions?: FindConditions<Entity>,
+    conditions?: FindConditions<Entity>
   ): Promise<[Entity[], number]>;
 
   findAndCount(
-    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>,
+    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>
   ): Promise<[Entity[], number]> {
     return this.manager.findAndCount(
       this.entity as any,
-      optionsOrConditions as any,
+      optionsOrConditions as any
     );
   }
 
@@ -273,25 +262,25 @@ export class BaseRepository<Entity extends ObjectLiteral> implements IRepository
 
   findByIds(
     ids: any[],
-    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>,
+    optionsOrConditions?: FindManyOptions<Entity> | FindConditions<Entity>
   ): Promise<Entity[]> {
     return this.manager.findByIds(
       this.entity as any,
       ids,
-      optionsOrConditions as any,
+      optionsOrConditions as any
     );
   }
 
   findOne(
     id?: string | number | Date | ObjectID,
-    options?: FindOneOptions<Entity>,
+    options?: FindOneOptions<Entity>
   ): Promise<Entity | undefined>;
 
   findOne(options?: FindOneOptions<Entity>): Promise<Entity | undefined>;
 
   findOne(
     conditions?: FindConditions<Entity>,
-    options?: FindOneOptions<Entity>,
+    options?: FindOneOptions<Entity>
   ): Promise<Entity | undefined>;
 
   findOne(
@@ -302,25 +291,25 @@ export class BaseRepository<Entity extends ObjectLiteral> implements IRepository
       | ObjectID
       | FindOneOptions<Entity>
       | FindConditions<Entity>,
-    maybeOptions?: FindOneOptions<Entity>,
+    maybeOptions?: FindOneOptions<Entity>
   ): Promise<Entity | undefined> {
     return this.manager.findOne(
       this.entity as any,
       optionsOrConditions as any,
-      maybeOptions,
+      maybeOptions
     );
   }
 
   findOneOrFail(
     id?: string | number | Date | ObjectID,
-    options?: FindOneOptions<Entity>,
+    options?: FindOneOptions<Entity>
   ): Promise<Entity>;
 
   findOneOrFail(options?: FindOneOptions<Entity>): Promise<Entity>;
 
   findOneOrFail(
     conditions?: FindConditions<Entity>,
-    options?: FindOneOptions<Entity>,
+    options?: FindOneOptions<Entity>
   ): Promise<Entity>;
 
   findOneOrFail(
@@ -331,12 +320,12 @@ export class BaseRepository<Entity extends ObjectLiteral> implements IRepository
       | ObjectID
       | FindOneOptions<Entity>
       | FindConditions<Entity>,
-    maybeOptions?: FindOneOptions<Entity>,
+    maybeOptions?: FindOneOptions<Entity>
   ): Promise<Entity> {
     return this.manager.findOneOrFail(
       this.entity as any,
       optionsOrConditions as any,
-      maybeOptions,
+      maybeOptions
     );
   }
 
@@ -351,27 +340,17 @@ export class BaseRepository<Entity extends ObjectLiteral> implements IRepository
   increment(
     conditions: FindConditions<Entity>,
     propertyPath: string,
-    value: number | string,
+    value: number | string
   ): Promise<UpdateResult> {
-    return this.manager.increment(
-      this.entity,
-      conditions,
-      propertyPath,
-      value,
-    );
+    return this.manager.increment(this.entity, conditions, propertyPath, value);
   }
 
   decrement(
     conditions: FindConditions<Entity>,
     propertyPath: string,
-    value: number | string,
+    value: number | string
   ): Promise<UpdateResult> {
-    return this.manager.decrement(
-      this.entity,
-      conditions,
-      propertyPath,
-      value,
-    );
+    return this.manager.decrement(this.entity, conditions, propertyPath, value);
   }
 
   async transaction<T>(operation: () => Promise<T>): Promise<T> {

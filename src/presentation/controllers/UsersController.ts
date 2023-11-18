@@ -33,6 +33,7 @@ import { RolesGuard } from "infrastructure/guards/roles.guard";
 import { Roles } from "infrastructure/decorators/roles.decorator";
 import { RoleEnum } from "infrastructure/enums/role.enum";
 import { Public } from "infrastructure/decorators/public.decorator";
+import { Page, PageOptions } from "infrastructure/common/page";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("Users")
@@ -50,12 +51,15 @@ export class UsersController {
     type: PagVM,
     status: 200,
   })
-  async getUserspag(@Query() query: PaginateQueryVM): Promise<PagVM<UserVM>> {
+  async getUserspag(@Query() query: PaginateQueryVM): Promise<Page<Users>> {
     const take = query.take;
     const page = query.pag;
-    const result = await this.UsersUseCase.getUsersPag(take, (page - 1) * take);
-    const metarules = result[0].map((item) => UserVM.toViewModel(item));
-    return PagVM.toViewModel<UserVM>(metarules, result[1]);
+    const result = await this.UsersUseCase.getUsersPag({
+      page,
+      take,
+    } as PageOptions).catch(() => "Error al buscar lista de usuarios");
+    if (typeof result === "string") return { message: result } as any;
+    return result;
   }
 
   @Public()

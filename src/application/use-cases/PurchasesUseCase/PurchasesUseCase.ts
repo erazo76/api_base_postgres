@@ -15,7 +15,7 @@ export class PurchasesUseCase implements IPurchasesUseCase {
 
   async getPurchases(pageOpts: PageOptions): Promise<Page<Purchases>> {
     const [purchases, count] = await this.purchasesRepo.findAndCount({
-      skip: pageOpts.page - 1,
+      skip: (pageOpts.page - 1) * pageOpts.take,
       take: pageOpts.take,
       relations: ["buyer", "prDetail", "prDetail.seller", "prDetail.product"],
     });
