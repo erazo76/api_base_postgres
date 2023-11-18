@@ -5,7 +5,12 @@ import { DeleteResult, UpdateResult } from "typeorm";
 
 @Injectable()
 export abstract class IPurchasesUseCase {
-  abstract getPurchases(pageOpts: PageOptions): Promise<Page<Purchases>>;
+  abstract getPurchases(
+    pageOpts: PageOptions,
+    status?: string,
+    startDate?: string,
+    endDate?: string
+  ): Promise<Page<Purchases>>;
 
   abstract getPurchaseById(id: string): Promise<Purchases>;
 

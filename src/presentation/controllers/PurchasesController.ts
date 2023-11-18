@@ -21,7 +21,6 @@ import { UnprocessableEntityError } from "presentation/errors/UnprocessableEntit
 import { Purchases } from "infrastructure/database/mapper/Purchases.entity";
 import { IPurchasesUseCase } from "application/ports/UseCases/PurchasesUseCase/IPurchasesUseCase.interface";
 import { Page, PageOptions } from "infrastructure/common/page";
-import { PaginateQueryVM } from "presentation/view-models/shared/paginateQuery.dto";
 import { PurchaseVM } from "presentation/view-models/purchases/purchaseVM.dto";
 import { CreatePurchaseVM } from "presentation/view-models/purchases/createPurchase.dto";
 import { UpdatePurchaseVM } from "presentation/view-models/purchases/updatePurchase.dto";
@@ -30,6 +29,7 @@ import { RolesGuard } from "infrastructure/guards/roles.guard";
 import { Public } from "infrastructure/decorators/public.decorator";
 import { Roles } from "infrastructure/decorators/roles.decorator";
 import { RoleEnum } from "infrastructure/enums/role.enum";
+import { GetPurchaseVM } from "presentation/view-models/purchases/getPurchase.dto";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("Purchases")
@@ -47,15 +47,21 @@ export class PurchasesController {
     type: PurchaseVM,
     status: 200,
   })
-  async getPurchases(
-    @Query() query: PaginateQueryVM
-  ): Promise<Page<Purchases>> {
+  async getPurchases(@Query() query: GetPurchaseVM): Promise<Page<Purchases>> {
     const take = query.take;
     const page = query.pag;
-    const result = await this.PurchasesUseCase.getPurchases({
-      page,
-      take,
-    } as PageOptions).catch(() => "Error al buscar lista de compra");
+    const status = query.status;
+    const startDate = query.startDate;
+    const endDate = query.endDate;
+    const result = await this.PurchasesUseCase.getPurchases(
+      {
+        page,
+        take,
+      } as PageOptions,
+      status,
+      startDate,
+      endDate
+    ).catch(() => "Error al buscar lista de compra");
     if (typeof result === "string") return { message: result } as any;
     return result;
   }

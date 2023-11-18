@@ -4,7 +4,7 @@ import { IPurchaseDetailsUseCase } from "application/ports/UseCases/PurchaseDeta
 import { IPurchasesUseCase } from "application/ports/UseCases/PurchasesUseCase/IPurchasesUseCase.interface";
 import { Page, PageMeta, PageOptions } from "infrastructure/common/page";
 import { Purchases } from "infrastructure/database/mapper/Purchases.entity";
-import { DeleteResult, UpdateResult } from "typeorm";
+import { Between, DeleteResult, UpdateResult } from "typeorm";
 
 @Injectable()
 export class PurchasesUseCase implements IPurchasesUseCase {
@@ -13,14 +13,33 @@ export class PurchasesUseCase implements IPurchasesUseCase {
     private readonly purchaseDetail: IPurchaseDetailsUseCase
   ) {}
 
-  async getPurchases(pageOpts: PageOptions): Promise<Page<Purchases>> {
-    const [purchases, count] = await this.purchasesRepo.findAndCount({
-      skip: (pageOpts.page - 1) * pageOpts.take,
-      take: pageOpts.take,
-      relations: ["buyer", "prDetail", "prDetail.seller", "prDetail.product"],
-    });
-    const pageMeta = new PageMeta(pageOpts, count);
-    return new Page(purchases, pageMeta);
+  async getPurchases(
+    pageOpts: PageOptions,
+    status: string,
+    startDate: string,
+    endDate: string
+  ): Promise<Page<Purchases>> {
+    try {
+      const stat: any = {};
+      if (status) {
+        stat.status = status;
+      }
+
+      if (startDate && endDate) {
+        stat.createdAt = Between(startDate, endDate);
+      }
+
+      const [purchases, count] = await this.purchasesRepo.findAndCount({
+        where: [stat],
+        skip: (pageOpts.page - 1) * pageOpts.take,
+        take: pageOpts.take,
+        relations: ["buyer", "prDetail", "prDetail.seller", "prDetail.product"],
+      });
+      const pageMeta = new PageMeta(pageOpts, count);
+      return new Page(purchases, pageMeta);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async getPurchaseById(id: string): Promise<Purchases> {
