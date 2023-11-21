@@ -10,6 +10,8 @@ import {
   DeleteResult,
   InsertResult,
   RemoveOptions,
+  QueryRunner,
+  SelectQueryBuilder,
 } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
@@ -40,6 +42,11 @@ export abstract class IRepository<Entity> {
       | DeepPartial<Entity>
       | DeepPartial<Entity>[]
   ): Entity | Entity[];
+
+  abstract CreateQueryBuilder(
+    alias?: string,
+    queryRunner?: QueryRunner
+  ): SelectQueryBuilder<Entity>;
 
   abstract merge(
     mergeIntoEntity: Entity,

@@ -15,6 +15,7 @@ import {
   FindOneOptions,
   Connection,
   EntityTarget,
+  SelectQueryBuilder,
 } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
@@ -64,7 +65,16 @@ export class BaseRepository<Entity extends ObjectLiteral>
       plainEntityLikeOrPlainEntityLikes as any
     );
   }
-
+  CreateQueryBuilder(
+    alias?: string,
+    queryRunner?: QueryRunner
+  ): SelectQueryBuilder<Entity> {
+    return this.manager.createQueryBuilder(
+      this.entity as any,
+      alias,
+      queryRunner
+    );
+  }
   merge(
     mergeIntoEntity: Entity,
     ...entityLikes: DeepPartial<Entity>[]
