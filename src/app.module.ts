@@ -36,6 +36,7 @@ import { AuthUseCase } from "application/use-cases/AuthUseCase/AuthUseCase";
 import { ProductsModule } from "infrastructure/ioc/products.module";
 import { PurchasesModule } from "infrastructure/ioc/purchases.module";
 import { PurchaseDetailsModule } from "infrastructure/ioc/purchaseDetails.module";
+import { FilesModule } from "infrastructure/ioc/files.module";
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { PurchaseDetailsModule } from "infrastructure/ioc/purchaseDetails.module
       secret: `${constants.API_JWT_SECRET}`,
       signOptions: { expiresIn: "24h" },
     }).module,
+
     TerminusModule,
     //Modules IOC
     UsersModule,
@@ -65,6 +67,7 @@ import { PurchaseDetailsModule } from "infrastructure/ioc/purchaseDetails.module
     ProductsModule,
     PurchasesModule,
     PurchaseDetailsModule,
+    FilesModule,
     AuthModule,
   ],
   controllers: [HealthController],
