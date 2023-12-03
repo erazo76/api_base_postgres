@@ -3,10 +3,12 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Post,
   Put,
   Query,
+  Res,
   UseGuards,
 } from "@nestjs/common";
 import {
@@ -30,6 +32,7 @@ import { Public } from "infrastructure/decorators/public.decorator";
 import { Roles } from "infrastructure/decorators/roles.decorator";
 import { RoleEnum } from "infrastructure/enums/role.enum";
 import { GetPurchaseVM } from "presentation/view-models/purchases/getPurchase.dto";
+import { Response } from "express";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("Purchases")
@@ -47,7 +50,10 @@ export class PurchasesController {
     type: PurchaseVM,
     status: 200,
   })
-  async getPurchases(@Query() query: GetPurchaseVM): Promise<Page<Purchases>> {
+  async getPurchases(
+    @Query() query: GetPurchaseVM,
+    @Res() res: Response
+  ): Promise<Page<Purchases> | Response> {
     const take = query.take;
     const page = query.pag;
     const status = query.status;
@@ -62,8 +68,17 @@ export class PurchasesController {
       startDate,
       endDate
     ).catch(() => "Error al buscar lista de compra");
-    if (typeof result === "string") return { message: result } as any;
-    return result;
+    if (typeof result === "string") {
+      return res
+        .status(HttpStatus.NOT_FOUND)
+        .json({ statusCode: 404, message: result, data: [], meta: null });
+    }
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Consulta exitosa",
+      data: result["data"],
+      meta: result["meta"],
+    });
   }
 
   @Public()
@@ -82,12 +97,25 @@ export class PurchasesController {
     type: PurchaseVM,
     status: 200,
   })
-  async getPurchaseById(@Param("id") purchaseId: string): Promise<PurchaseVM> {
-    const result = await this.PurchasesUseCase.getPurchaseById(
-      purchaseId
-    ).catch(() => "Error al buscar compra");
-    if (typeof result === "string") return { message: result } as any;
-    return PurchaseVM.toViewModel(result);
+  async getPurchaseById(
+    @Param("id") purchaseId: string,
+    @Res() res: Response
+  ): Promise<PurchaseVM | Response> {
+    const result = await this.PurchasesUseCase.getPurchaseById(purchaseId);
+    if (!result) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        statusCode: 404,
+        message: "Compra no encontrada",
+        data: [],
+        meta: null,
+      });
+    }
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Consulta exitosa",
+      data: PurchaseVM.toViewModel(result),
+      meta: null,
+    });
   }
 
   @Public()
@@ -108,7 +136,7 @@ export class PurchasesController {
   })
   async calculateTotal(@Param("id") purchaseId: string): Promise<number> {
     const result = await this.PurchasesUseCase.calculateTotal(purchaseId).catch(
-      () => "Error alcalcular el total de la compra"
+      () => "Error al calcular el total de la compra"
     );
     if (typeof result === "string") return { message: result } as any;
     return result;
@@ -128,7 +156,10 @@ export class PurchasesController {
     type: PurchaseVM,
     status: 200,
   })
-  async created(@Body() body: CreatePurchaseVM): Promise<PurchaseVM> {
+  async created(
+    @Body() body: CreatePurchaseVM,
+    @Res() res: Response
+  ): Promise<PurchaseVM | Response> {
     let purchase = CreatePurchaseVM.fromViewModel(body);
     if (!body.active) {
       purchase.active = true;
@@ -136,8 +167,17 @@ export class PurchasesController {
     const result = await this.PurchasesUseCase.createPurchase(purchase).catch(
       () => "Error al crear compra"
     );
-    if (typeof result === "string") return { message: result } as any;
-    return PurchaseVM.toViewModel(result);
+    if (typeof result === "string")
+      return res
+        .status(HttpStatus.CONFLICT)
+        .json({ statusCode: 409, message: result, data: [], meta: null });
+
+    return res.status(HttpStatus.CREATED).json({
+      statusCode: 201,
+      message: "Registro exitoso",
+      data: PurchaseVM.toViewModel(result),
+      meta: null,
+    });
   }
 
   @Public()
@@ -162,20 +202,34 @@ export class PurchasesController {
   })
   async update(
     @Param("id") purchaseId: string,
-    @Body() body: UpdatePurchaseVM
-  ): Promise<Purchases> {
-    const exists = await this.PurchasesUseCase.getPurchaseById(
-      purchaseId
-    ).catch(() => "Compra no encontrada");
-    if (!exists || typeof exists === "string")
-      return { message: "Compra no encontrada" } as any;
+    @Body() body: UpdatePurchaseVM,
+    @Res() res: Response
+  ): Promise<Purchases | Response> {
+    const exists = await this.PurchasesUseCase.getPurchaseByIdBase(purchaseId);
+
+    if (!exists)
+      return res.status(HttpStatus.NOT_FOUND).json({
+        statusCode: 404,
+        message: "Compra no encontrada",
+        data: [],
+        meta: null,
+      });
 
     const vm = UpdatePurchaseVM.fromViewModel(exists, body);
-    const result = await this.PurchasesUseCase.updatePurchase(vm).catch(
-      () => "No se pudo actualizar"
-    );
-    if (typeof result === "string") return { message: result } as any;
-    return vm;
+    const result = await this.PurchasesUseCase.updatePurchase(vm);
+    if (!result)
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        statusCode: 500,
+        message: "No se realizó la actualización",
+        data: [],
+        meta: null,
+      });
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Actualización exitosa",
+      data: vm,
+      meta: null,
+    });
   }
 
   @Public()

@@ -3,10 +3,12 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Post,
   Put,
   Query,
+  Res,
   UseGuards,
 } from "@nestjs/common";
 import {
@@ -34,6 +36,7 @@ import { Roles } from "infrastructure/decorators/roles.decorator";
 import { RoleEnum } from "infrastructure/enums/role.enum";
 import { Public } from "infrastructure/decorators/public.decorator";
 import { Page, PageOptions } from "infrastructure/common/page";
+import { Response } from "express";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("Users")
@@ -51,15 +54,28 @@ export class UsersController {
     type: PagVM,
     status: 200,
   })
-  async getUserspag(@Query() query: PaginateQueryVM): Promise<Page<Users>> {
+  async getUserspag(
+    @Query() query: PaginateQueryVM,
+    @Res() res: Response
+  ): Promise<Page<Users> | Response> {
     const take = query.take;
     const page = query.pag;
-    const result = await this.UsersUseCase.getUsersPag({
+    let result = await this.UsersUseCase.getUsersPag({
       page,
       take,
     } as PageOptions).catch(() => "Error al buscar lista de usuarios");
-    if (typeof result === "string") return { message: result } as any;
-    return result;
+    if (typeof result === "string") {
+      return res
+        .status(HttpStatus.NOT_FOUND)
+        .json({ statusCode: 404, message: result, data: [], meta: null });
+    }
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Consulta exitosa",
+      data: result["data"],
+      meta: result["meta"],
+    });
   }
 
   @Public()
@@ -78,12 +94,26 @@ export class UsersController {
     type: UserVM,
     status: 200,
   })
-  async getUserById(@Param("id") userId: string): Promise<UserVM> {
-    const result = await this.UsersUseCase.getUserById(userId).catch(
-      () => "Error al buscar el usuario"
-    );
-    if (typeof result === "string") return { message: result } as any;
-    return UserVM.toViewModel(result);
+  async getUserById(
+    @Param("id") userId: string,
+    @Res() res: Response
+  ): Promise<UserVM | Response> {
+    const result = await this.UsersUseCase.getUserById(userId);
+    if (!result) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        statusCode: 404,
+        message: "Usuario no encontrado",
+        data: [],
+        meta: null,
+      });
+    }
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Consulta exitosa",
+      data: UserVM.toViewModel(result),
+      meta: null,
+    });
   }
 
   @Public()
@@ -100,7 +130,10 @@ export class UsersController {
     type: UserVM,
     status: 200,
   })
-  async created(@Body() body: CreateUserVM): Promise<UserVM> {
+  async created(
+    @Body() body: CreateUserVM,
+    @Res() res: Response
+  ): Promise<UserVM | Response> {
     let user = CreateUserVM.fromViewModel(body);
     let existsEmail = await this.UsersUseCase.getUserByUserNameOrEmail(
       body.email
@@ -109,9 +142,12 @@ export class UsersController {
       body.userName
     ).catch(() => "error");
     if (existsEmail || existsName) {
-      return {
-        message: existsName ? "UserName existente" : "Email existente",
-      } as any;
+      return res.status(HttpStatus.CONFLICT).json({
+        statusCode: 409,
+        message: existsName ? "Nombre clave existente" : "Email existente",
+        data: [],
+        meta: null,
+      });
     }
     if (!body.role) {
       user.role = RoleEnum.CLIENT;
@@ -126,8 +162,16 @@ export class UsersController {
     const result = await this.UsersUseCase.createUser(user).catch(
       () => "Error al crear el usuario"
     );
-    if (typeof result === "string") return { message: result } as any;
-    return result;
+    if (typeof result === "string")
+      return res
+        .status(HttpStatus.CONFLICT)
+        .json({ statusCode: 409, message: result, data: [], meta: null });
+    return res.status(HttpStatus.CREATED).json({
+      statusCode: 201,
+      message: "Registro exitoso",
+      data: UserVM.toViewModel(result),
+      meta: null,
+    });
   }
 
   @Roles(RoleEnum.ADMIN, RoleEnum.CLIENT)
@@ -152,13 +196,17 @@ export class UsersController {
   })
   async update(
     @Param("id") userId: string,
-    @Body() body: UpdateUserVM
-  ): Promise<Users> {
-    const exists = await this.UsersUseCase.getUserById(userId).catch(
-      () => "Usuario no encontrado"
-    );
-    if (!exists || typeof exists === "string")
-      return { message: "Usuario no encontrado" } as any;
+    @Body() body: UpdateUserVM,
+    @Res() res: Response
+  ): Promise<Users | Response> {
+    const exists = await this.UsersUseCase.getUserById(userId);
+    if (!exists)
+      return res.status(HttpStatus.NOT_FOUND).json({
+        statusCode: 404,
+        message: "Usuario no encontrado",
+        data: [],
+        meta: null,
+      });
     body.id = userId;
     const existsEmail = await this.UsersUseCase.getUserByUserNameOrEmail(
       body.email
@@ -172,16 +220,30 @@ export class UsersController {
       typeof existsName == "object" ? exists.id == existsName.id : false;
 
     if ((existsEmail && !idEmail) || (existsName && !idName)) {
-      return {
-        message: existsName ? "UserName existente" : "Email existente",
-      } as any;
+      return res.status(HttpStatus.CONFLICT).json({
+        statusCode: 409,
+        message: existsName ? "Nombre clave existente" : "Email existente",
+        data: [],
+        meta: null,
+      });
     }
     const vm = UpdateUserVM.fromViewModel(exists, body);
     const result = await this.UsersUseCase.updateUser(vm).catch(
       () => "No se pudo actualizar"
     );
-    if (typeof result === "string") return { message: result } as any;
-    return vm;
+    if (typeof result === "string")
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        statusCode: 500,
+        message: "No se realizó la actualización",
+        data: [],
+        meta: null,
+      });
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Actualización exitosa",
+      data: vm,
+      meta: null,
+    });
   }
 
   @Roles(RoleEnum.ADMIN)

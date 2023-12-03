@@ -11,12 +11,16 @@ export class CategoriesUseCase implements ICategoriesUseCase {
   constructor(private readonly categoriesRepo: ICategoriesRepository) {}
 
   async getCategories(pageOpts: PageOptions): Promise<Page<Categories>> {
-    const [categories, count] = await this.categoriesRepo.findAndCount({
-      skip: (pageOpts.page - 1) * pageOpts.take,
-      take: pageOpts.take,
-    });
-    const pageMeta = new PageMeta(pageOpts, count);
-    return new Page(categories, pageMeta);
+    try {
+      const [categories, count] = await this.categoriesRepo.findAndCount({
+        skip: (pageOpts.page - 1) * pageOpts.take,
+        take: pageOpts.take,
+      });
+      const pageMeta = new PageMeta(pageOpts, count);
+      return new Page(categories, pageMeta);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   getCategorieById(id: string): Promise<Categories> {

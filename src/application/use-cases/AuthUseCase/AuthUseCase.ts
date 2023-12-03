@@ -22,6 +22,7 @@ export class AuthUseCase implements IAuthUseCase {
 
   async getAccessToken(user: Users): Promise<Credentials> {
     const payload: UserPayload = {
+      id: user.id,
       userName: user.userName,
       email: user.email,
       name: user.name,
@@ -35,6 +36,7 @@ export class AuthUseCase implements IAuthUseCase {
     });
     return {
       accessToken: token,
+      payload: payload,
     };
   }
 

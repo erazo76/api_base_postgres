@@ -5,7 +5,10 @@ import { DeleteResult, UpdateResult } from "typeorm";
 
 @Injectable()
 export abstract class IProductsUseCase {
-  abstract getProducts(pageOpts: PageOptions): Promise<Page<Products>>;
+  abstract getProducts(
+    pageOpts: PageOptions,
+    category?: string
+  ): Promise<Page<Products>>;
 
   abstract getProductById(id: string): Promise<Products>;
 

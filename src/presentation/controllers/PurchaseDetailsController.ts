@@ -3,10 +3,12 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Post,
   Put,
   Query,
+  Res,
   UseGuards,
 } from "@nestjs/common";
 import {
@@ -30,6 +32,7 @@ import { RolesGuard } from "infrastructure/guards/roles.guard";
 import { Public } from "infrastructure/decorators/public.decorator";
 import { Roles } from "infrastructure/decorators/roles.decorator";
 import { RoleEnum } from "infrastructure/enums/role.enum";
+import { Response } from "express";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("PurchaseDetails")
@@ -50,16 +53,26 @@ export class PurchaseDetailsController {
     status: 200,
   })
   async getPurchaseDetails(
-    @Query() query: PaginateQueryVM
-  ): Promise<Page<PurchaseDetails>> {
+    @Query() query: PaginateQueryVM,
+    @Res() res: Response
+  ): Promise<Page<PurchaseDetails> | Response> {
     const take = query.take;
     const page = query.pag;
     const result = await this.PurchaseDetailsUseCase.getPurchaseDetails({
       page,
       take,
     } as PageOptions).catch(() => "Error al buscar detalle de compra");
-    if (typeof result === "string") return { message: result } as any;
-    return result;
+    if (typeof result === "string") {
+      return res
+        .status(HttpStatus.NOT_FOUND)
+        .json({ statusCode: 404, message: result, data: [], meta: null });
+    }
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Consulta exitosa",
+      data: result["data"],
+      meta: result["meta"],
+    });
   }
 
   @Public()
@@ -79,13 +92,26 @@ export class PurchaseDetailsController {
     status: 200,
   })
   async getPurchaseDetailById(
-    @Param("id") purchaseDetailId: string
-  ): Promise<PurchaseDetailVM> {
+    @Param("id") purchaseDetailId: string,
+    @Res() res: Response
+  ): Promise<PurchaseDetailVM | Response> {
     const result = await this.PurchaseDetailsUseCase.getPurchaseDetailById(
       purchaseDetailId
-    ).catch(() => "Error al buscar compra");
-    if (typeof result === "string") return { message: result } as any;
-    return PurchaseDetailVM.toViewModel(result);
+    );
+    if (!result) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        statusCode: 404,
+        message: "Compra no encontrada",
+        data: [],
+        meta: null,
+      });
+    }
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Consulta exitosa",
+      data: PurchaseDetailVM.toViewModel(result),
+      meta: null,
+    });
   }
 
   @Public()
@@ -103,14 +129,24 @@ export class PurchaseDetailsController {
     status: 200,
   })
   async created(
-    @Body() body: CreatePurchaseDetailVM
-  ): Promise<PurchaseDetailVM> {
+    @Body() body: CreatePurchaseDetailVM,
+    @Res() res: Response
+  ): Promise<PurchaseDetailVM | Response> {
     let purchaseDetail = CreatePurchaseDetailVM.fromViewModel(body);
     const result = await this.PurchaseDetailsUseCase.createPurchaseDetail(
       purchaseDetail
     ).catch(() => "Error al crear detalle de compra");
-    if (typeof result === "string") return { message: result } as any;
-    return PurchaseDetailVM.toViewModel(result);
+    if (typeof result === "string")
+      return res
+        .status(HttpStatus.CONFLICT)
+        .json({ statusCode: 409, message: result, data: [], meta: null });
+
+    return res.status(HttpStatus.CREATED).json({
+      statusCode: 201,
+      message: "Registro exitoso",
+      data: PurchaseDetailVM.toViewModel(result),
+      meta: null,
+    });
   }
 
   @Roles(RoleEnum.ADMIN)
