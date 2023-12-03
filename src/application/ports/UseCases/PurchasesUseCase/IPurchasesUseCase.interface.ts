@@ -14,6 +14,8 @@ export abstract class IPurchasesUseCase {
 
   abstract getPurchaseById(id: string): Promise<Purchases>;
 
+  abstract getPurchaseByIdBase(id: string): Promise<Purchases>;
+
   abstract createPurchase(PurchaseModel: Purchases): Promise<Purchases>;
 
   abstract updatePurchase(PurchaseModel: Purchases): Promise<UpdateResult>;

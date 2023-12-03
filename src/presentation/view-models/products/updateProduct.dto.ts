@@ -134,6 +134,7 @@ export class UpdateProductVM {
     currentProduct.image = mv.image ?? currentProduct.image;
     currentProduct.brand = mv.brand ?? currentProduct.brand;
     currentProduct.active = mv.active ?? currentProduct.active;
+    currentProduct.cost = mv.cost ?? currentProduct.cost;
     return currentProduct;
   }
 }

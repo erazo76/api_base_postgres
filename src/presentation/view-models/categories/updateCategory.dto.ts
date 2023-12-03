@@ -75,6 +75,7 @@ export class UpdateCategorieVM {
     currentCategorie.description =
       mv.description ?? currentCategorie.description;
     currentCategorie.active = mv.active ?? currentCategorie.active;
+    currentCategorie.image = mv.image ?? currentCategorie.image;
     return currentCategorie;
   }
 }

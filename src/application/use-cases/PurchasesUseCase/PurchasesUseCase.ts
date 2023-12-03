@@ -45,9 +45,19 @@ export class PurchasesUseCase implements IPurchasesUseCase {
   async getPurchaseById(id: string): Promise<Purchases> {
     try {
       return await this.purchasesRepo.findOne({
-        id: id,
+        where: { id },
         relations: ["buyer", "prDetail", "prDetail.seller", "prDetail.product"],
         select: ["id", "status", "total", "createdAt"],
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getPurchaseByIdBase(id: string): Promise<Purchases> {
+    try {
+      return await this.purchasesRepo.findOne({
+        where: { id },
       });
     } catch (error) {
       console.log(error);

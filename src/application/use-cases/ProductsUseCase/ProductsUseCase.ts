@@ -10,17 +10,24 @@ export class ProductsUseCase implements IProductsUseCase {
   constructor(private readonly categoriesRepo: IProductsRepository) {}
 
   async getProducts(pageOpts: PageOptions): Promise<Page<Products>> {
-    const [categories, count] = await this.categoriesRepo.findAndCount({
-      skip: (pageOpts.page - 1) * pageOpts.take,
-      take: pageOpts.take,
-      relations: ["category"],
-    });
-    const pageMeta = new PageMeta(pageOpts, count);
-    return new Page(categories, pageMeta);
+    try {
+      const [categories, count] = await this.categoriesRepo.findAndCount({
+        skip: (pageOpts.page - 1) * pageOpts.take,
+        take: pageOpts.take,
+        relations: ["category"],
+      });
+      const pageMeta = new PageMeta(pageOpts, count);
+      return new Page(categories, pageMeta);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   getProductById(id: string): Promise<Products> {
-    return this.categoriesRepo.findOne({ id: id, relations: ["category"] });
+    return this.categoriesRepo.findOne({
+      where: { id },
+      relations: ["category"],
+    });
   }
 
   getProductByName(name: string): Promise<Products> {

@@ -37,7 +37,7 @@ export class UpdatePurchaseVM {
 
   @IsString()
   @Matches(/^(REQUESTED|ROUTED|DELIVERED|CANCELED)$/, {
-    message: "Status must be ADMIN, SELLER or CLIENT",
+    message: "Status must be REQUESTED, ROUTED, DELIVERED or CANCELED",
   })
   @Expose()
   @ApiProperty({

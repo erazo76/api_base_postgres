@@ -3,6 +3,8 @@ import {
   Body,
   Controller,
   Post,
+  HttpStatus,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -24,6 +26,7 @@ import { memoryStorage } from "multer";
 import { UnprocessableEntityError } from "presentation/errors/UnprocessableEntityError";
 import { UploadFileVM } from "presentation/view-models/files/createFile.dto";
 import { FileVM } from "presentation/view-models/files/fileVM.dto";
+import { Response } from "express";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("Files")
@@ -61,12 +64,22 @@ export class FilesController {
   @Post()
   async uploadFile(
     @Body() body: UploadFileVM,
-    @UploadedFile() file: IFile
-  ): Promise<FileVM> {
+    @UploadedFile() file: IFile,
+    @Res() res: Response
+  ): Promise<FileVM | Response> {
     const result = await this.fileService
       .uploadFile(file, body?.bucket)
       .catch(() => "Error al cargar el archivo");
-    if (typeof result === "string") return { message: result } as any;
-    return result;
+    if (typeof result === "string") {
+      return res
+        .status(HttpStatus.NOT_FOUND)
+        .json({ statusCode: 404, message: result, data: [], meta: null });
+    }
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Imagen cargada con exito",
+      data: result,
+      meta: null,
+    });
   }
 }

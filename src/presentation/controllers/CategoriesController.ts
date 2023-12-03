@@ -3,10 +3,12 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Post,
   Put,
   Query,
+  Res,
   UseGuards,
 } from "@nestjs/common";
 import {
@@ -29,6 +31,7 @@ import { JwtAuthGuard } from "infrastructure/guards/jwt.guard";
 import { RolesGuard } from "infrastructure/guards/roles.guard";
 import { Roles } from "infrastructure/decorators/roles.decorator";
 import { RoleEnum } from "infrastructure/enums/role.enum";
+import { Response } from "express";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("Categories")
@@ -47,16 +50,26 @@ export class CategoriesController {
     status: 200,
   })
   async getCategories(
-    @Query() query: PaginateQueryVM
-  ): Promise<Page<Categories>> {
+    @Query() query: PaginateQueryVM,
+    @Res() res: Response
+  ): Promise<Page<Categories> | Response> {
     const take = query.take;
     const page = query.pag;
     const result = await this.CategoriesUseCase.getCategories({
       page,
       take,
     } as PageOptions).catch(() => "Error al buscar lista de categorias");
-    if (typeof result === "string") return { message: result } as any;
-    return result;
+    if (typeof result === "string") {
+      return res
+        .status(HttpStatus.NOT_FOUND)
+        .json({ statusCode: 404, message: result, data: [], meta: null });
+    }
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Consulta exitosa",
+      data: result["data"],
+      meta: result["meta"],
+    });
   }
 
   @Roles(RoleEnum.ADMIN, RoleEnum.CLIENT, RoleEnum.SELLER)
@@ -76,13 +89,24 @@ export class CategoriesController {
     status: 200,
   })
   async getCategorieById(
-    @Param("id") categoryId: string
-  ): Promise<CategorieVM> {
-    const result = await this.CategoriesUseCase.getCategorieById(
-      categoryId
-    ).catch(() => "Error al buscar la categoria");
-    if (typeof result === "string") return { message: result } as any;
-    return CategorieVM.toViewModel(result);
+    @Param("id") categoryId: string,
+    @Res() res: Response
+  ): Promise<CategorieVM | Response> {
+    const result = await this.CategoriesUseCase.getCategorieById(categoryId);
+    if (!result) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        statusCode: 404,
+        message: "Categoría no encontrada",
+        data: [],
+        meta: null,
+      });
+    }
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Consulta exitosa",
+      data: CategorieVM.toViewModel(result),
+      meta: null,
+    });
   }
 
   @Roles(RoleEnum.ADMIN)
@@ -99,24 +123,38 @@ export class CategoriesController {
     type: CategorieVM,
     status: 200,
   })
-  async created(@Body() body: CreateCategorieVM): Promise<CategorieVM> {
+  async created(
+    @Body() body: CreateCategorieVM,
+    @Res() res: Response
+  ): Promise<CategorieVM | Response> {
     let category = CreateCategorieVM.fromViewModel(body);
     let existsCategorie = await this.CategoriesUseCase.getCategorieByName(
       body.name
     ).catch(() => "error");
     if (existsCategorie) {
-      return {
-        message: "Categoria existente",
-      } as any;
+      return res.status(HttpStatus.CONFLICT).json({
+        statusCode: 409,
+        message: "Categoría existente",
+        data: [],
+        meta: null,
+      });
     }
     if (!body.active) {
       category.active = true;
     }
     const result = await this.CategoriesUseCase.createCategorie(category).catch(
-      () => "Error al crear la categoria"
+      () => "Error al crear la categoría"
     );
-    if (typeof result === "string") return { message: result } as any;
-    return result;
+    if (typeof result === "string")
+      return res
+        .status(HttpStatus.CONFLICT)
+        .json({ statusCode: 409, message: result, data: [], meta: null });
+    return res.status(HttpStatus.CREATED).json({
+      statusCode: 201,
+      message: "Registro exitoso",
+      data: CategorieVM.toViewModel(result),
+      meta: null,
+    });
   }
 
   @Roles(RoleEnum.ADMIN)
@@ -141,13 +179,17 @@ export class CategoriesController {
   })
   async update(
     @Param("id") categoryId: string,
-    @Body() body: UpdateCategorieVM
-  ): Promise<Categories> {
-    const exists = await this.CategoriesUseCase.getCategorieById(
-      categoryId
-    ).catch(() => "Categoria no encontrada");
-    if (!exists || typeof exists === "string")
-      return { message: "Categoria no encontrada" } as any;
+    @Body() body: UpdateCategorieVM,
+    @Res() res: Response
+  ): Promise<Categories | Response> {
+    const exists = await this.CategoriesUseCase.getCategorieById(categoryId);
+    if (!exists)
+      return res.status(HttpStatus.NOT_FOUND).json({
+        statusCode: 404,
+        message: "Categoría no encontrada",
+        data: [],
+        meta: null,
+      });
 
     const existsCategorie = await this.CategoriesUseCase.getCategorieByName(
       body.name
@@ -158,16 +200,28 @@ export class CategoriesController {
         ? exists.id == existsCategorie.id
         : false;
     if (existsCategorie && !idCategory) {
-      return {
-        message: "Categoria existente",
-      } as any;
+      return res.status(HttpStatus.CONFLICT).json({
+        statusCode: 409,
+        message: "Categoría existente",
+        data: [],
+        meta: null,
+      });
     }
     const vm = UpdateCategorieVM.fromViewModel(exists, body);
-    const result = await this.CategoriesUseCase.updateCategorie(vm).catch(
-      () => "No se pudo actualizar"
-    );
-    if (typeof result === "string") return { message: result } as any;
-    return vm;
+    const result = await this.CategoriesUseCase.updateCategorie(vm);
+    if (!result)
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        statusCode: 500,
+        message: "No se realizó la actualización",
+        data: [],
+        meta: null,
+      });
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Actualización exitosa",
+      data: vm,
+      meta: null,
+    });
   }
 
   @Roles(RoleEnum.ADMIN)
