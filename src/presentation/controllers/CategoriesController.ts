@@ -32,6 +32,7 @@ import { RolesGuard } from "infrastructure/guards/roles.guard";
 import { Roles } from "infrastructure/decorators/roles.decorator";
 import { RoleEnum } from "infrastructure/enums/role.enum";
 import { Response } from "express";
+import { Public } from "infrastructure/decorators/public.decorator";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("Categories")
@@ -39,7 +40,7 @@ import { Response } from "express";
 export class CategoriesController {
   constructor(private readonly CategoriesUseCase: ICategoriesUseCase) {}
 
-  @Roles(RoleEnum.ADMIN, RoleEnum.CLIENT, RoleEnum.SELLER)
+  @Public()
   @Get()
   @ApiOperation({
     summary: "Find all Categories.",
