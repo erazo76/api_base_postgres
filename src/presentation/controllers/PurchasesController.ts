@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   Res,
   UseGuards,
 } from "@nestjs/common";
@@ -32,7 +33,7 @@ import { Public } from "infrastructure/decorators/public.decorator";
 import { Roles } from "infrastructure/decorators/roles.decorator";
 import { RoleEnum } from "infrastructure/enums/role.enum";
 import { GetPurchaseVM } from "presentation/view-models/purchases/getPurchase.dto";
-import { Response } from "express";
+import { Request, Response } from "express";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("Purchases")
@@ -40,7 +41,7 @@ import { Response } from "express";
 export class PurchasesController {
   constructor(private readonly PurchasesUseCase: IPurchasesUseCase) {}
 
-  @Roles(RoleEnum.ADMIN)
+  @Roles(RoleEnum.ADMIN, RoleEnum.CLIENT, RoleEnum.SELLER)
   @Get()
   @ApiOperation({
     summary: "Find all Purchases.",
@@ -52,8 +53,10 @@ export class PurchasesController {
   })
   async getPurchases(
     @Query() query: GetPurchaseVM,
-    @Res() res: Response
+    @Res() res: Response,
+    @Req() req: Request
   ): Promise<Page<Purchases> | Response> {
+    const roling = [req.user["role"], req.user["id"]];
     const take = query.take;
     const page = query.pag;
     const status = query.status;
@@ -64,6 +67,7 @@ export class PurchasesController {
         page,
         take,
       } as PageOptions,
+      roling,
       status,
       startDate,
       endDate

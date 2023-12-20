@@ -15,6 +15,7 @@ export class PurchasesUseCase implements IPurchasesUseCase {
 
   async getPurchases(
     pageOpts: PageOptions,
+    roling: Array<string>,
     status: string,
     startDate: string,
     endDate: string
@@ -29,6 +30,9 @@ export class PurchasesUseCase implements IPurchasesUseCase {
         stat.createdAt = Between(startDate, endDate);
       }
 
+      if (roling[0] === "CLIENT") {
+        stat.buyer = roling[1];
+      }
       const [purchases, count] = await this.purchasesRepo.findAndCount({
         where: [stat],
         skip: (pageOpts.page - 1) * pageOpts.take,
