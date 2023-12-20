@@ -45,17 +45,20 @@ export class PurchaseDetailsUseCase implements IPurchaseDetailsUseCase {
   async createPurchaseDetail(
     moduleModel: PurchaseDetails
   ): Promise<PurchaseDetails> {
-    console.log(moduleModel);
-    const prod = await this.productsUseCase.getProductById(
-      JSON.stringify(moduleModel.product)
-    );
-    moduleModel.subtotal = this.calculatedSubtotal(
-      prod.price,
-      moduleModel.quantity
-    );
-    moduleModel.cost = this.calculatedCost(prod.cost, moduleModel.quantity);
-    this.substractionStock(moduleModel.quantity, prod.stock, prod.id);
-    return this.purchaseDetailsRepo.save(moduleModel);
+    try {
+      const prod = await this.productsUseCase.getProductById(
+        JSON.stringify(moduleModel.product).replace(/"/g, "")
+      );
+      moduleModel.subtotal = this.calculatedSubtotal(
+        prod.price,
+        moduleModel.quantity
+      );
+      moduleModel.cost = this.calculatedCost(prod.cost, moduleModel.quantity);
+      this.substractionStock(moduleModel.quantity, prod.stock, prod.id);
+      return this.purchaseDetailsRepo.save(moduleModel);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   calculatedSubtotal(price: number, qty: number) {
