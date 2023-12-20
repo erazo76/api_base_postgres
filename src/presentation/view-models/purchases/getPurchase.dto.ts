@@ -15,7 +15,7 @@ export class GetPurchaseVM extends PartialType(PaginateQueryVM) {
   @Expose()
   @ApiProperty({
     description: "Status of purchase",
-    example: "REQUESTED | ROUTED | DELIVERED |CANCELED ",
+    example: "",
     type: String,
   })
   startDate?: string;
@@ -23,7 +23,7 @@ export class GetPurchaseVM extends PartialType(PaginateQueryVM) {
   @Expose()
   @ApiProperty({
     description: "Status of purchase",
-    example: "REQUESTED | ROUTED | DELIVERED |CANCELED ",
+    example: "",
     type: String,
   })
   endDate?: string;

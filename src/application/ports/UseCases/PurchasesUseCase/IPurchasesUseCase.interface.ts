@@ -7,6 +7,7 @@ import { DeleteResult, UpdateResult } from "typeorm";
 export abstract class IPurchasesUseCase {
   abstract getPurchases(
     pageOpts: PageOptions,
+    roling: Array<string>,
     status?: string,
     startDate?: string,
     endDate?: string
