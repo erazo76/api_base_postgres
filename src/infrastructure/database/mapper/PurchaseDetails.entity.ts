@@ -33,6 +33,9 @@ export class PurchaseDetails extends BaseEntity {
   @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   createdAt: string;
 
+  @Column("boolean", { name: "Active", nullable: true })
+  active: boolean | null;
+
   @ManyToOne(
     () => Users,
     (sell) => sell.prSeller,

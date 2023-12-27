@@ -6,7 +6,10 @@ import { DeleteResult, UpdateResult } from "typeorm";
 @Injectable()
 export abstract class IPurchaseDetailsUseCase {
   abstract getPurchaseDetails(
-    pageOpts: PageOptions
+    pageOpts: PageOptions,
+    active: boolean,
+    startDate: string,
+    endDate: string
   ): Promise<Page<PurchaseDetails>>;
 
   abstract getPurchaseDetailById(id: string): Promise<PurchaseDetails>;

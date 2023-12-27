@@ -23,7 +23,6 @@ import { UnprocessableEntityError } from "presentation/errors/UnprocessableEntit
 import { PurchaseDetails } from "infrastructure/database/mapper/PurchaseDetails.entity";
 import { IPurchaseDetailsUseCase } from "application/ports/UseCases/PurchaseDetailsUseCase/IPurchaseDetailsUseCase.interface";
 import { Page, PageOptions } from "infrastructure/common/page";
-import { PaginateQueryVM } from "presentation/view-models/shared/paginateQuery.dto";
 import { CreatePurchaseDetailVM } from "presentation/view-models/purchaseDetails/createPurchaseDetail.dto";
 import { UpdatePurchaseDetailVM } from "presentation/view-models/purchaseDetails/updatePurchaseDetail.dto";
 import { PurchaseDetailVM } from "presentation/view-models/purchaseDetails/purchaseDetailVM.dto";
@@ -33,6 +32,7 @@ import { Public } from "infrastructure/decorators/public.decorator";
 import { Roles } from "infrastructure/decorators/roles.decorator";
 import { RoleEnum } from "infrastructure/enums/role.enum";
 import { Response } from "express";
+import { GetPurchaseDetailVM } from "presentation/view-models/purchaseDetails/getPurchaseDetail.dto";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("PurchaseDetails")
@@ -53,15 +53,24 @@ export class PurchaseDetailsController {
     status: 200,
   })
   async getPurchaseDetails(
-    @Query() query: PaginateQueryVM,
+    @Query() query: GetPurchaseDetailVM,
     @Res() res: Response
   ): Promise<Page<PurchaseDetails> | Response> {
     const take = query.take;
     const page = query.pag;
-    const result = await this.PurchaseDetailsUseCase.getPurchaseDetails({
-      page,
-      take,
-    } as PageOptions).catch(() => "Error al buscar detalle de compra");
+    const active = query.active;
+    const startDate = query.startDate;
+    const endDate = query.endDate;
+
+    const result = await this.PurchaseDetailsUseCase.getPurchaseDetails(
+      {
+        page,
+        take,
+      } as PageOptions,
+      active,
+      startDate,
+      endDate
+    ).catch(() => "Error al buscar detalle de compra");
     if (typeof result === "string") {
       return res
         .status(HttpStatus.NOT_FOUND)
