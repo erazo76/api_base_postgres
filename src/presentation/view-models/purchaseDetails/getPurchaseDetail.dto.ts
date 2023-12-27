@@ -3,23 +3,14 @@ import { Purchases } from "infrastructure/database/mapper/Purchases.entity";
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { PaginateQueryVM } from "../shared/paginateQuery.dto";
 
-export class GetPurchaseVM extends PartialType(PaginateQueryVM) {
-  @Expose()
-  @ApiProperty({
-    description: "Text to search",
-    required: false,
-    example: "Panes",
-    type: String,
-  })
-  search?: string;
-
+export class GetPurchaseDetailVM extends PartialType(PaginateQueryVM) {
   @Expose()
   @ApiProperty({
     description: "Status of purchase",
-    example: "REQUESTED | ROUTED | DELIVERED |CANCELED ",
-    type: String,
+    example: "true | false",
+    type: Boolean,
   })
-  status?: string;
+  active?: boolean;
 
   @Expose()
   @ApiProperty({
@@ -37,13 +28,13 @@ export class GetPurchaseVM extends PartialType(PaginateQueryVM) {
   })
   endDate?: string;
 
-  static toViewModel(module: Purchases): GetPurchaseVM {
-    return plainToClass(GetPurchaseVM, module, {
+  static toViewModel(module: Purchases): GetPurchaseDetailVM {
+    return plainToClass(GetPurchaseDetailVM, module, {
       excludeExtraneousValues: true,
     });
   }
 
-  static fromViewModel(mv: GetPurchaseVM): Purchases {
+  static fromViewModel(mv: GetPurchaseDetailVM): Purchases {
     return new Purchases({
       ...mv,
     });

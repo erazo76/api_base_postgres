@@ -1,19 +1,17 @@
 import { Module } from "@nestjs/common";
-import { IPurchasesRepository } from "application/ports/Repository/PurchasesRepository/IPurchasesRepository.interface";
-import { IPurchasesUseCase } from "application/ports/UseCases/PurchasesUseCase/IPurchasesUseCase.interface";
-import { PurchasesUseCase } from "application/use-cases/PurchasesUseCase/PurchasesUseCase";
-import { PurchasesRepository } from "infrastructure/database/repositories/Purchases.repository";
-import { PurchasesController } from "presentation/controllers/PurchasesController";
 import { IPurchaseDetailsRepository } from "application/ports/Repository/PurchaseDetailsRepository/IPurchaseDetailsRepository.interface";
-import { PurchaseDetailsRepository } from "infrastructure/database/repositories/PurchaseDetails.repository";
+import { IPurchasesRepository } from "application/ports/Repository/PurchasesRepository/IPurchasesRepository.interface";
 import { IPurchaseDetailsUseCase } from "application/ports/UseCases/PurchaseDetailsUseCase/IPurchaseDetailsUseCase.interface";
+import { IPurchasesUseCase } from "application/ports/UseCases/PurchasesUseCase/IPurchasesUseCase.interface";
 import { PurchaseDetailsUseCase } from "application/use-cases/PurchaseDetailsUseCase/PurchaseDetailsUseCase";
-import { ProductsModule } from "./products.module";
+import { PurchasesUseCase } from "application/use-cases/PurchasesUseCase/PurchasesUseCase";
+import { PurchaseDetailsRepository } from "infrastructure/database/repositories/PurchaseDetails.repository";
+import { PurchasesRepository } from "infrastructure/database/repositories/Purchases.repository";
 import { SSEController } from "presentation/controllers/SseController";
 
 @Module({
-  controllers: [PurchasesController, SSEController],
-  imports: [ProductsModule],
+  controllers: [SSEController],
+  imports: [],
   providers: [
     {
       provide: IPurchasesRepository,
@@ -33,4 +31,4 @@ import { SSEController } from "presentation/controllers/SseController";
     },
   ],
 })
-export class PurchasesModule {}
+export class SseModule {}

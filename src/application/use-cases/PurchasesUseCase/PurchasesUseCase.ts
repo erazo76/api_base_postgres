@@ -4,17 +4,23 @@ import { IPurchaseDetailsUseCase } from "application/ports/UseCases/PurchaseDeta
 import { IPurchasesUseCase } from "application/ports/UseCases/PurchasesUseCase/IPurchasesUseCase.interface";
 import { Page, PageMeta, PageOptions } from "infrastructure/common/page";
 import { Purchases } from "infrastructure/database/mapper/Purchases.entity";
-import { Between, DeleteResult, UpdateResult } from "typeorm";
+import { Between, DeleteResult, ILike, UpdateResult } from "typeorm";
+import { fromEvent } from "rxjs";
+import { EventEmitter } from "stream";
 
 @Injectable()
 export class PurchasesUseCase implements IPurchasesUseCase {
+  private readonly emitter: EventEmitter;
   constructor(
     private readonly purchasesRepo: IPurchasesRepository,
     private readonly purchaseDetail: IPurchaseDetailsUseCase
-  ) {}
+  ) {
+    this.emitter = new EventEmitter();
+  }
 
   async getPurchases(
     pageOpts: PageOptions,
+    search: string,
     roling: Array<string>,
     status: string,
     startDate: string,
@@ -33,6 +39,13 @@ export class PurchasesUseCase implements IPurchasesUseCase {
       if (roling[0] === "CLIENT") {
         stat.buyer = roling[1];
       }
+
+      if (search) {
+        stat.buyer = {
+          name: ILike(`%${search}%`),
+        };
+      }
+
       const [purchases, count] = await this.purchasesRepo.findAndCount({
         where: [stat],
         skip: (pageOpts.page - 1) * pageOpts.take,
@@ -87,10 +100,25 @@ export class PurchasesUseCase implements IPurchasesUseCase {
   }
 
   updatePurchase(moduleModel: Purchases): Promise<UpdateResult> {
+    this.emitter.emit("eventName", {
+      data: {
+        change: true,
+        message: "Wait a moment please",
+      },
+    });
     return this.purchasesRepo.update(moduleModel.id, moduleModel);
   }
 
   deletePurchase(id: string): Promise<DeleteResult> {
     return this.purchasesRepo.delete(id);
+  }
+
+  async counterSse() {
+    try {
+      return fromEvent(this.emitter, "eventName");
+    } catch (error) {
+      console.log("error:", error);
+      return error;
+    }
   }
 }

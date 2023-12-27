@@ -56,6 +56,7 @@ export class PurchasesController {
     @Res() res: Response,
     @Req() req: Request
   ): Promise<Page<Purchases> | Response> {
+    const search = query.search;
     const roling = [req.user["role"], req.user["id"]];
     const take = query.take;
     const page = query.pag;
@@ -67,6 +68,7 @@ export class PurchasesController {
         page,
         take,
       } as PageOptions,
+      search,
       roling,
       status,
       startDate,
