@@ -9,10 +9,9 @@ import { PurchaseDetailsRepository } from "infrastructure/database/repositories/
 import { IPurchaseDetailsUseCase } from "application/ports/UseCases/PurchaseDetailsUseCase/IPurchaseDetailsUseCase.interface";
 import { PurchaseDetailsUseCase } from "application/use-cases/PurchaseDetailsUseCase/PurchaseDetailsUseCase";
 import { ProductsModule } from "./products.module";
-import { SSEController } from "presentation/controllers/SseController";
 
 @Module({
-  controllers: [PurchasesController, SSEController],
+  controllers: [PurchasesController],
   imports: [ProductsModule],
   providers: [
     {

@@ -5,18 +5,13 @@ import { IPurchasesUseCase } from "application/ports/UseCases/PurchasesUseCase/I
 import { Page, PageMeta, PageOptions } from "infrastructure/common/page";
 import { Purchases } from "infrastructure/database/mapper/Purchases.entity";
 import { Between, DeleteResult, ILike, UpdateResult } from "typeorm";
-import { fromEvent } from "rxjs";
-import { EventEmitter } from "stream";
 
 @Injectable()
 export class PurchasesUseCase implements IPurchasesUseCase {
-  private readonly emitter: EventEmitter;
   constructor(
     private readonly purchasesRepo: IPurchasesRepository,
     private readonly purchaseDetail: IPurchaseDetailsUseCase
-  ) {
-    this.emitter = new EventEmitter();
-  }
+  ) {}
 
   async getPurchases(
     pageOpts: PageOptions,
@@ -33,7 +28,12 @@ export class PurchasesUseCase implements IPurchasesUseCase {
       }
 
       if (startDate && endDate) {
-        stat.createdAt = Between(startDate, endDate);
+        const localStartDate = new Date(`${startDate}T00:00:00`);
+        const localEndDate = new Date(`${endDate}T23:59:59`);
+
+        const start = new Date(localStartDate.toUTCString());
+        const end = new Date(localEndDate.toUTCString());
+        stat.createdAt = Between(start, end);
       }
 
       if (roling[0] === "CLIENT") {
@@ -99,26 +99,15 @@ export class PurchasesUseCase implements IPurchasesUseCase {
     return await this.purchasesRepo.save(moduleModel);
   }
 
-  updatePurchase(moduleModel: Purchases): Promise<UpdateResult> {
-    this.emitter.emit("eventName", {
-      data: {
-        change: true,
-        message: "Wait a moment please",
-      },
-    });
-    return this.purchasesRepo.update(moduleModel.id, moduleModel);
+  async updatePurchase(moduleModel: Purchases): Promise<UpdateResult> {
+    const { id, status } = moduleModel;
+    if (status == "CANCELED") {
+      await this.purchaseDetail.deleteLogicPurchaseDetail(id);
+    }
+    return this.purchasesRepo.update(id, moduleModel);
   }
 
   deletePurchase(id: string): Promise<DeleteResult> {
     return this.purchasesRepo.delete(id);
-  }
-
-  async counterSse() {
-    try {
-      return fromEvent(this.emitter, "eventName");
-    } catch (error) {
-      console.log("error:", error);
-      return error;
-    }
   }
 }

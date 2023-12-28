@@ -27,4 +27,6 @@ export abstract class IPurchaseDetailsUseCase {
   ): Promise<UpdateResult>;
 
   abstract deletePurchaseDetail(id: string): Promise<DeleteResult>;
+
+  abstract deleteLogicPurchaseDetail(purchaseId: string): Promise<void>;
 }
