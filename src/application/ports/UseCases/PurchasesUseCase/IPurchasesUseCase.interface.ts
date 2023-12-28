@@ -25,6 +25,4 @@ export abstract class IPurchasesUseCase {
   abstract calculateTotal(purchaseId: string): Promise<number>;
 
   abstract deletePurchase(id: string): Promise<DeleteResult>;
-
-  abstract counterSse(): Promise<any>;
 }

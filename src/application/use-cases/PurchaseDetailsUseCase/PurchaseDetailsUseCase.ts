@@ -28,7 +28,12 @@ export class PurchaseDetailsUseCase implements IPurchaseDetailsUseCase {
       }
 
       if (startDate && endDate) {
-        stat.createdAt = Between(startDate, endDate);
+        const localStartDate = new Date(`${startDate}T00:00:00`);
+        const localEndDate = new Date(`${endDate}T23:59:59`);
+
+        const start = new Date(localStartDate.toUTCString());
+        const end = new Date(localEndDate.toUTCString());
+        stat.createdAt = Between(start, end);
       }
 
       const [purchases, count] = await this.purchaseDetailsRepo.findAndCount({
@@ -99,5 +104,13 @@ export class PurchaseDetailsUseCase implements IPurchaseDetailsUseCase {
 
   deletePurchaseDetail(id: string): Promise<DeleteResult> {
     return this.purchaseDetailsRepo.delete(id);
+  }
+
+  async deleteLogicPurchaseDetail(purchaseId: string): Promise<void> {
+    const details = await this.getPurchaseDetailByPurchaseId(purchaseId);
+    details.forEach((e) => {
+      e.active = false;
+      this.purchaseDetailsRepo.update(e.id, e);
+    });
   }
 }
