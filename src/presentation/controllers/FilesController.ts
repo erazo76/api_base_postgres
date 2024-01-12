@@ -34,7 +34,7 @@ import { Response } from "express";
 export class FilesController {
   constructor(private readonly fileService: IFilesUseCase) {}
 
-  @Roles(RoleEnum.ADMIN)
+  @Roles(RoleEnum.ADMIN, RoleEnum.CLIENT)
   @ApiOperation({
     summary: "Upload file (jpg, jpeg, png, gif or svg )",
   })

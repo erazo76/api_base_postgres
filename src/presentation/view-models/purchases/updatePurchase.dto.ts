@@ -35,6 +35,39 @@ export class UpdatePurchaseVM {
   })
   total: number;
 
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0.0)
+  @Max(9999999999.99)
+  @Expose()
+  @ApiProperty({
+    description: "Cash to payment purchase",
+    example: "12.5",
+    type: Number,
+  })
+  paymentCash: number;
+
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0.0)
+  @Max(9999999999.99)
+  @Expose()
+  @ApiProperty({
+    description: "Change to payment purchase",
+    example: "12.5",
+    type: Number,
+  })
+  paymentChange: number;
+
+  @IsOptional()
+  @Expose()
+  @ApiProperty({
+    description: "Url to Image of payment transfer capture",
+    example: "admin",
+    type: String,
+  })
+  paymentImage: string;
+
   @IsString()
   @Matches(/^(REQUESTED|ROUTED|DELIVERED|CANCELED)$/, {
     message: "Status must be REQUESTED, ROUTED, DELIVERED or CANCELED",
@@ -47,6 +80,18 @@ export class UpdatePurchaseVM {
   })
   status: string;
 
+  @IsString()
+  @Matches(/^(EFECTIVO|TRANSFERENCIA)$/, {
+    message: "Status must be EFECTIVO or TRANSFERENCIA",
+  })
+  @Expose()
+  @ApiProperty({
+    description: "Type of payment",
+    example: "EFECTIVO | TRANSFERENCIA",
+    type: String,
+  })
+  paymentType: string;
+
   @IsOptional()
   @IsBoolean()
   @Expose()
@@ -57,6 +102,17 @@ export class UpdatePurchaseVM {
     type: Boolean,
   })
   active: boolean = false;
+
+  @IsOptional()
+  @IsBoolean()
+  @Expose()
+  @ApiProperty({
+    description: "Check if the purchase have paymented",
+    default: "false",
+    example: "true",
+    type: Boolean,
+  })
+  paymented: boolean = false;
 
   @IsOptional()
   @Expose()
@@ -82,6 +138,13 @@ export class UpdatePurchaseVM {
     currentPurchase.total = mv.total ?? currentPurchase.total;
     currentPurchase.status = mv.status ?? currentPurchase.status;
     currentPurchase.active = mv.active ?? currentPurchase.active;
+
+    currentPurchase.paymented = mv.paymented ?? currentPurchase.paymented;
+    currentPurchase.paymentImage =
+      mv.paymentImage ?? currentPurchase.paymentImage;
+    currentPurchase.paymentChange =
+      mv.paymentChange ?? currentPurchase.paymentChange;
+    currentPurchase.paymentCash = mv.paymentCash ?? currentPurchase.paymentCash;
     return currentPurchase;
   }
 }
