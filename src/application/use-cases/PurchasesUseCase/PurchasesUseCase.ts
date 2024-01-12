@@ -86,7 +86,14 @@ export class PurchasesUseCase implements IPurchasesUseCase {
       purchaseId
     );
 
-    const total = detail.reduce((init, ended) => init + ended.subtotal, 0);
+    const filteredDetails = detail.filter((detal) => {
+      return detal.product && detal.product.name !== "DOMICILIO";
+    });
+
+    const total = filteredDetails.reduce(
+      (init, ended) => init + ended.subtotal,
+      0
+    );
     let model = new Purchases();
     model.id = purchaseId;
     model.total = Math.round(total * 100) / 100;
