@@ -37,6 +37,7 @@ import { ProductsModule } from "infrastructure/ioc/products.module";
 import { PurchasesModule } from "infrastructure/ioc/purchases.module";
 import { PurchaseDetailsModule } from "infrastructure/ioc/purchaseDetails.module";
 import { FilesModule } from "infrastructure/ioc/files.module";
+import { AdvertisementsModule } from "infrastructure/ioc/advertisements.module";
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { FilesModule } from "infrastructure/ioc/files.module";
     PurchasesModule,
     PurchaseDetailsModule,
     FilesModule,
+    AdvertisementsModule,
     AuthModule,
   ],
   controllers: [HealthController],

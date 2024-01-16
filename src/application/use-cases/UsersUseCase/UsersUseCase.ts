@@ -48,4 +48,8 @@ export class UsersUseCase implements IUsersUseCase {
   deleteUser(id: string): Promise<DeleteResult> {
     return this.usersRepo.delete(id);
   }
+
+  async countUser(): Promise<number> {
+    return await this.usersRepo.count();
+  }
 }

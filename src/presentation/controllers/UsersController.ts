@@ -280,4 +280,26 @@ export class UsersController {
     if (typeof result === "string") return { message: result };
     return { id: exists.id };
   }
+
+  @Public()
+  @Get("/all/counter")
+  @ApiOperation({
+    summary: "Count a user",
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "Count all users",
+    type: UnprocessableEntityError,
+  })
+  @ApiResponse({
+    description: "Users couted",
+    type: Object,
+    status: 200,
+  })
+  async countUsers(): Promise<number> {
+    const result = await this.UsersUseCase.countUser().catch(
+      () => "Error al contar Usuarios"
+    );
+    if (typeof result === "string") return { message: result } as any;
+    return result;
+  }
 }
