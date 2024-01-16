@@ -18,4 +18,6 @@ export abstract class IUsersUseCase {
   abstract updateUser(UserModel: Users): Promise<UpdateResult>;
 
   abstract deleteUser(id: string): Promise<DeleteResult>;
+
+  abstract countUser(): Promise<number>;
 }

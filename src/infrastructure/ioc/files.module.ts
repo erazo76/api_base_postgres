@@ -19,5 +19,11 @@ import { FilesController } from "presentation/controllers/FilesController";
     },
     CloudinaryProvider,
   ],
+  exports: [
+    {
+      provide: IFilesUseCase,
+      useClass: FilesUseCase,
+    },
+  ],
 })
 export class FilesModule {}
