@@ -56,17 +56,18 @@ export class PurchaseDetailsController {
     @Query() query: GetPurchaseDetailVM,
     @Res() res: Response
   ): Promise<Page<PurchaseDetails> | Response> {
+    const search = query.search;
     const take = query.take;
     const page = query.pag;
     const active = query.active;
     const startDate = query.startDate;
     const endDate = query.endDate;
-
     const result = await this.PurchaseDetailsUseCase.getPurchaseDetails(
       {
         page,
         take,
       } as PageOptions,
+      search,
       active,
       startDate,
       endDate
