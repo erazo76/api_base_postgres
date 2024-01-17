@@ -6,7 +6,7 @@ import { Page, PageMeta, PageOptions } from "infrastructure/common/page";
 import { Products } from "infrastructure/database/mapper/Products.entity";
 import { PurchaseDetails } from "infrastructure/database/mapper/PurchaseDetails.entity";
 
-import { Between, DeleteResult, UpdateResult } from "typeorm";
+import { Between, DeleteResult, ILike, UpdateResult } from "typeorm";
 
 @Injectable()
 export class PurchaseDetailsUseCase implements IPurchaseDetailsUseCase {
@@ -17,6 +17,7 @@ export class PurchaseDetailsUseCase implements IPurchaseDetailsUseCase {
 
   async getPurchaseDetails(
     pageOpts: PageOptions,
+    search: string,
     active: boolean,
     startDate: string,
     endDate: string
@@ -36,12 +37,19 @@ export class PurchaseDetailsUseCase implements IPurchaseDetailsUseCase {
         stat.createdAt = Between(start, end);
       }
 
+      if (search) {
+        stat.product = {
+          category: { name: ILike(`%${search}%`) },
+        };
+      }
+
       const [purchases, count] = await this.purchaseDetailsRepo.findAndCount({
         where: [stat],
         skip: (pageOpts.page - 1) * pageOpts.take,
         take: pageOpts.take,
         relations: ["detail", "seller", "product", "product.category"],
       });
+
       const pageMeta = new PageMeta(pageOpts, count);
       return new Page(purchases, pageMeta);
     } catch (error) {

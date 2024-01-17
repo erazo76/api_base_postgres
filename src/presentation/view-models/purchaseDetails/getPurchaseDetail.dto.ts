@@ -28,6 +28,15 @@ export class GetPurchaseDetailVM extends PartialType(PaginateQueryVM) {
   })
   endDate?: string;
 
+  @Expose()
+  @ApiProperty({
+    description: "Text to search",
+    required: false,
+    example: "Panes",
+    type: String,
+  })
+  search?: string;
+
   static toViewModel(module: Purchases): GetPurchaseDetailVM {
     return plainToClass(GetPurchaseDetailVM, module, {
       excludeExtraneousValues: true,
