@@ -54,7 +54,10 @@ export class AdvertisementsUseCase implements IAdvertisementsUseCase {
     file: IFile,
     moduleModel: Advertisements
   ): Promise<UpdateResult> {
-    moduleModel.urlImage = await this.uploadFile(file, "");
+    if (file) {
+      moduleModel.urlImage = await this.uploadFile(file, "");
+    }
+
     return this.advertisementsRepo.update(moduleModel.id, moduleModel);
   }
 
