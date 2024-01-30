@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { MailerService } from "@nest-modules/mailer";
+import { MailerService } from "@nestjs-modules/mailer";
 import * as fs from "fs";
 import path from "path";
 import Handlebars from "handlebars";

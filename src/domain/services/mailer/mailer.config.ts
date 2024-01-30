@@ -1,5 +1,5 @@
-import { MailerOptions } from "@nest-modules/mailer";
-import { HandlebarsAdapter } from "@nest-modules/mailer/dist/adapters/handlebars.adapter";
+import { MailerOptions } from "@nestjs-modules/mailer";
+import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 
 export const mailerConfig: MailerOptions = {
   transport: {
