@@ -47,12 +47,11 @@ export class UsersUseCase implements IUsersUseCase {
       const urlConfirm = `${protocol}://${host}`;
 
       console.log(urlConfirm);
-      await this.mailService.sendEMail(
-        email,
-        "Validación de registro",
-        "punto-azul",
-        { userId: result.id, url: urlConfirm, name: name }
-      );
+      await this.mailService.sendEMail(email, "Validación de registro", {
+        userId: result.id,
+        url: urlConfirm,
+        name: name,
+      });
       return result;
     } catch (error) {
       console.log(error);
