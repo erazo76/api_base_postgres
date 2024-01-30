@@ -38,6 +38,7 @@ import { PurchasesModule } from "infrastructure/ioc/purchases.module";
 import { PurchaseDetailsModule } from "infrastructure/ioc/purchaseDetails.module";
 import { FilesModule } from "infrastructure/ioc/files.module";
 import { AdvertisementsModule } from "infrastructure/ioc/advertisements.module";
+import { MailModule } from "infrastructure/ioc/mailer.module";
 
 @Module({
   imports: [
@@ -60,7 +61,7 @@ import { AdvertisementsModule } from "infrastructure/ioc/advertisements.module";
       secret: `${constants.API_JWT_SECRET}`,
       signOptions: { expiresIn: "24h" },
     }).module,
-
+    MailModule,
     TerminusModule,
     //Modules IOC
     UsersModule,

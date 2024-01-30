@@ -13,11 +13,17 @@ export abstract class IUsersUseCase {
 
   abstract getUsersPag(pageOpts: PageOptions): Promise<Page<Users>>;
 
-  abstract createUser(UserModel: Users): Promise<Users>;
+  abstract createUser(
+    UserModel: Users,
+    protocol: string,
+    host: string
+  ): Promise<Users>;
 
   abstract updateUser(UserModel: Users): Promise<UpdateResult>;
 
   abstract deleteUser(id: string): Promise<DeleteResult>;
 
   abstract countUser(): Promise<number>;
+
+  abstract validateRegister(id: string): Promise<void>;
 }

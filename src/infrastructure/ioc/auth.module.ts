@@ -12,10 +12,19 @@ import { UsersUseCase } from "application/use-cases/UsersUseCase/UsersUseCase";
 import { IUsersUseCase } from "application/ports/UseCases/UsersUseCase/IUsersUseCase.interface";
 import { IUsersRepository } from "application/ports/Repository/UsersRepository/IUsersRepository.interface";
 import { UsersRepository } from "infrastructure/database/repositories/Users.repository";
+import { MailModule } from "./mailer.module";
+import { MailService } from "domain/services/mailer/mailer.service";
 
 @Module({
-  imports: [UsersModule, PassportModule, JwtModule.register({}), ConfigModule],
+  imports: [
+    UsersModule,
+    PassportModule,
+    JwtModule.register({}),
+    ConfigModule,
+    MailModule,
+  ],
   providers: [
+    MailService,
     {
       provide: IUsersUseCase,
       useClass: UsersUseCase,

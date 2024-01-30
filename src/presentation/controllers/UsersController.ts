@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   Res,
   UseGuards,
 } from "@nestjs/common";
@@ -36,7 +37,7 @@ import { Roles } from "infrastructure/decorators/roles.decorator";
 import { RoleEnum } from "infrastructure/enums/role.enum";
 import { Public } from "infrastructure/decorators/public.decorator";
 import { Page, PageOptions } from "infrastructure/common/page";
-import { Response } from "express";
+import { Response, Request } from "express";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("Users")
@@ -132,8 +133,11 @@ export class UsersController {
   })
   async created(
     @Body() body: CreateUserVM,
+    @Req() request: Request,
     @Res() res: Response
   ): Promise<UserVM | Response> {
+    const protocol = request.protocol;
+    const host = request.get("host");
     let user = CreateUserVM.fromViewModel(body);
     let existsEmail = await this.UsersUseCase.getUserByUserNameOrEmail(
       body.email
@@ -153,15 +157,17 @@ export class UsersController {
       user.role = RoleEnum.CLIENT;
     }
     if (!body.active) {
-      user.active = true;
+      user.active = false;
     }
     user.salt = uuidv4();
     user.password = crypto
       .createHmac("sha256", `${user.salt}${user.phone}${constants.API_SALT}`)
       .digest("hex");
-    const result = await this.UsersUseCase.createUser(user).catch(
-      () => "Error al crear el usuario"
-    );
+    const result = await this.UsersUseCase.createUser(
+      user,
+      protocol,
+      host
+    ).catch(() => "Error al crear el usuario");
     if (typeof result === "string")
       return res
         .status(HttpStatus.CONFLICT)
@@ -301,5 +307,27 @@ export class UsersController {
     );
     if (typeof result === "string") return { message: result } as any;
     return result;
+  }
+
+  @Public()
+  @Get("/:id/validate-register")
+  @ApiOperation({
+    summary: "Validate User resgistr",
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "Validate User register",
+    type: UnprocessableEntityError,
+  })
+  @ApiResponse({
+    description: "User register validated",
+    type: Object,
+    status: 200,
+  })
+  async validateRegister(
+    @Param("id") userId: string,
+    @Res() res
+  ): Promise<void> {
+    await this.UsersUseCase.validateRegister(userId);
+    res.redirect("https://puntoazulpanaderia.online/#/ingreso");
   }
 }
