@@ -29,6 +29,7 @@ export class AuthUseCase implements IAuthUseCase {
       role: user.role,
       phone: user.phone,
       address: user.address,
+      active: user.active,
     };
 
     const token = this.jwtService.sign(payload, {
@@ -52,7 +53,7 @@ export class AuthUseCase implements IAuthUseCase {
           `${user.salt}${password}${this.configService.get<string>("API_SALT")}`
         )
         .digest("hex");
-      if (hashPass === user.password) {
+      if (hashPass === user.password && user.active === true) {
         return user;
       } else {
         return null;

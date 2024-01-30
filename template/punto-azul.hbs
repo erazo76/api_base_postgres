@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confirmación de Registro</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        align-items: center;
+        width: 80%;
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        padding: 20px;
+        background-color: #87ceeb; /* Color azul claro */
+      }
+
+      .header img {
+        width: 100px;
+      }
+      .body {
+        padding: 20px;
+        align-items: center;
+        text-align: center;
+      }
+      .footer {       
+        max-width: 600px;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        background-color: #001f3f; /* Color azul oscuro */
+        color: #fff;
+        font-size: smaller;
+      }
+      .footer img {
+        width: 50px;
+      }
+      .social-media-bar {
+        display: inline-block;
+        position: relative;             
+        background-color: #000000;
+        padding: 10px;
+        text-align: center;
+        border-radius: 15px;       
+        align-items: center; /* Centra los elementos verticalmente */
+        justify-content: center;          
+      }
+
+      .social-media-bar .icon-container {
+        position: relative;
+        display: inline-block; /* Alinea los elementos en línea */
+        margin: 5px;
+      }
+      .social-media-bar img {
+        position: relative;
+        transition: filter 0.3s;
+        width: 38px;
+        margin: 5px;
+      }
+
+      /* Cambia el color de los íconos al pasar el mouse sobre ellos */
+      .social-media-bar .icon-container: .wp:hover {
+        filter: drop-shadow(0 0 0.75rem green);
+      }
+      .social-media-bar .icon-container: .go:hover {
+        filter: drop-shadow(0 0 0.75rem red);
+      }
+      .social-media-bar .icon-container: .in:hover {
+        filter: drop-shadow(0 0 0.75rem #b025d3);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <img
+          src="https://res.cloudinary.com/diitm4dx7/image/upload/v1706493543/logo_punto_azul_zldts2.png"
+          alt="Logo"
+        />
+        <h2 style="color: #333;">¡Ya estas en Panadería Punto Azul!</h2>
+      </div>
+
+      <!-- Body -->
+      <div class="body">
+        <p>Hola <strong>{{name}}</strong>,</p>
+        <p>
+          ¡Gracias por registrarte en nuestra aplicación! Estamos emocionados de
+          tenerte como parte de nuestra exclusiva clientela.
+        </p>
+        <p>
+          Para completar tu registro, por favor presiona el siguiente botón:
+        </p>
+        <a
+          href="{{url}}/api/users/{{userId}}/validate-register"
+          style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;"
+          >Confirmar Registro</a
+        >
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+         <a
+          href="https://puntoazulpanaderia.online"
+         >      
+          <img
+          src="https://res.cloudinary.com/diitm4dx7/image/upload/v1706493492/logo_punto_azul_pq_iiygby.png"
+          alt="Logo"
+        /></a
+        >
+
+        <p>Descubre la calidad de nuestros productos.</p>
+        <p>¡Para más información contactanos!</p>
+        <div class="social-media-bar">
+
+
+
+          <div class="icon-container">
+          <img
+            class="wp"
+            src="https://res.cloudinary.com/diitm4dx7/image/upload/v1706542013/wp-icon_u6ron0.png"
+            alt="whatsaap"
+          />
+          </div>
+
+          <div class="icon-container">
+          <img
+            class="go"
+            src="https://res.cloudinary.com/diitm4dx7/image/upload/v1706542012/go-icon_kqhqhj.png"
+            alt="Google"
+          />
+          </div>
+
+          <div class="icon-container">
+          <img
+            class="in"
+            src="https://res.cloudinary.com/diitm4dx7/image/upload/v1706542012/in-icon_lto1yu.png"
+            alt="Instagram"
+          />
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </body>  
+</html>

@@ -6,4 +6,5 @@ export interface UserPayload {
   role: string;
   address: string;
   phone: string;
+  active: boolean;
 }

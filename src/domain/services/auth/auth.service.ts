@@ -21,7 +21,7 @@ export class AuthService implements IAuthService {
         let hashPass = crypto
           .createHmac("sha256", `${user.salt}${password}${constants.API_SALT}`)
           .digest("hex");
-        if (hashPass === user.password) {
+        if (hashPass === user.password && user.active === true) {
           resolve(user);
         } else {
           resolve(null);
@@ -43,6 +43,7 @@ export class AuthService implements IAuthService {
       roles: user.role,
       username: user.userName,
       fullName: user.name,
+      active: user.active,
     };
     return {
       access_token: this.jwtService.sign(payload, signOptions),
