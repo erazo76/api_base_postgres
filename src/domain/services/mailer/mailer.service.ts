@@ -1,43 +1,46 @@
+import * as nodemailer from "nodemailer";
 import { Injectable, Logger } from "@nestjs/common";
-import { MailerService } from "@nestjs-modules/mailer";
+import * as handlebars from "handlebars";
 import * as fs from "fs";
 import path from "path";
-import Handlebars from "handlebars";
+import { mailerConfig } from "./mailer.config";
 
 @Injectable()
 export class MailService {
-  constructor(private readonly mailerService: MailerService) {}
+  private transporter: nodemailer.Transporter;
+  private confirmationTemplate: handlebars.TemplateDelegate;
+  private passwordResetTemplate: handlebars.TemplateDelegate;
+  private groupInviteTemplate: handlebars.TemplateDelegate;
+  constructor() {
+    this.transporter = nodemailer.createTransport(mailerConfig, {
+      from: {
+        name: "Panadería Punto Azul",
+        address: "puntoazulpanaderia@gmail.com",
+      },
+    });
+    this.confirmationTemplate = this.renderTemplate("punto-azul.hbs");
+  }
 
   logger: Logger = new Logger("MailerService");
 
-  async renderTemplate(templateName: string, context: any): Promise<string> {
-    const filePath = path.resolve(`./template/${templateName}.hbs`);
-
+  private renderTemplate(templateName: string): handlebars.TemplateDelegate {
+    const filePath = path.resolve(`./template/${templateName}`);
     try {
       const source = fs.readFileSync(filePath, "utf-8");
-      const template = Handlebars.compile(source);
-      const renderedContent = template(context);
-      return renderedContent;
+      return handlebars.compile(source);
     } catch (error) {
       console.error("Error rendering template: ", error);
       throw error;
     }
   }
 
-  async sendEMail(
-    receiverEmail: string,
-    subject: string,
-    templateName: string,
-    context: any
-  ) {
+  async sendEMail(receiverEmail: string, subject: string, context: any) {
     try {
-      const renderedContent = await this.renderTemplate(templateName, context);
-
-      await this.mailerService.sendMail({
+      const html = this.confirmationTemplate(context);
+      await this.transporter.sendMail({
         to: receiverEmail,
         subject: subject,
-        html: renderedContent,
-        context: context,
+        html: html,
       });
 
       return true;
