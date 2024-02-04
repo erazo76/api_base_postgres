@@ -9,6 +9,7 @@ import { mailerConfig } from "./mailer.config";
 export class MailService {
   private transporter: nodemailer.Transporter;
   private confirmationTemplate: handlebars.TemplateDelegate;
+  private confirmationTemplateB: handlebars.TemplateDelegate;
   private passwordResetTemplate: handlebars.TemplateDelegate;
   private groupInviteTemplate: handlebars.TemplateDelegate;
   constructor() {
@@ -19,6 +20,7 @@ export class MailService {
       },
     });
     this.confirmationTemplate = this.renderTemplate("punto-azul.hbs");
+    this.confirmationTemplateB = this.renderTemplate("punto-azul-B.hbs");
   }
 
   logger: Logger = new Logger("MailerService");
@@ -37,6 +39,22 @@ export class MailService {
   async sendEMail(receiverEmail: string, subject: string, context: any) {
     try {
       const html = this.confirmationTemplate(context);
+      await this.transporter.sendMail({
+        to: receiverEmail,
+        subject: subject,
+        html: html,
+      });
+
+      return true;
+    } catch (error) {
+      console.error("Error sending email: ", error);
+      return false;
+    }
+  }
+
+  async sendEMailB(receiverEmail: string, subject: string, context: any) {
+    try {
+      const html = this.confirmationTemplateB(context);
       await this.transporter.sendMail({
         to: receiverEmail,
         subject: subject,

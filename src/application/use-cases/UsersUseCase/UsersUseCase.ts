@@ -1,17 +1,48 @@
 import { Injectable } from "@nestjs/common";
+import { Cron } from "@nestjs/schedule";
 import { IUsersRepository } from "application/ports/Repository/UsersRepository/IUsersRepository.interface";
 import { IUsersUseCase } from "application/ports/UseCases/UsersUseCase/IUsersUseCase.interface";
 import { MailService } from "domain/services/mailer/mailer.service";
 import { Page, PageMeta, PageOptions } from "infrastructure/common/page";
 import { Users } from "infrastructure/database/mapper/Users.entity";
 import { DeleteResult, UpdateResult } from "typeorm";
+import * as cronParser from "cron-parser";
+
+const TWO_MONTHS = "0 0 1 */3 *";
 
 @Injectable()
 export class UsersUseCase implements IUsersUseCase {
+  private nextResetDate: string;
   constructor(
     private readonly usersRepo: IUsersRepository,
     private mailService: MailService
   ) {}
+
+  @Cron(TWO_MONTHS)
+  private async resetUsersPoint(): Promise<void> {
+    const user = await this.usersRepo.find();
+    this.calculateNextResetDate();
+    user.map((e) => {
+      e.points = 0;
+      e.resetpointsat = this.nextResetDate;
+      this.updateUser(e);
+    });
+  }
+
+  async initResetDate(): Promise<void> {
+    const user = await this.usersRepo.find();
+    this.calculateNextResetDate();
+    user.map((e) => {
+      e.resetpointsat = this.nextResetDate;
+      this.updateUser(e);
+    });
+  }
+
+  private calculateNextResetDate(): void {
+    const interval = cronParser.parseExpression(TWO_MONTHS);
+    const nextResetDate = interval.next();
+    this.nextResetDate = nextResetDate.toString();
+  }
 
   getUsers(): Promise<Users[]> {
     return this.usersRepo.find();
@@ -46,7 +77,6 @@ export class UsersUseCase implements IUsersUseCase {
       const result = await this.usersRepo.save(moduleModel);
       const urlConfirm = `${protocol}://${host}`;
 
-      console.log(urlConfirm);
       await this.mailService.sendEMail(email, "Validación de registro", {
         userId: result.id,
         url: urlConfirm,
@@ -74,5 +104,25 @@ export class UsersUseCase implements IUsersUseCase {
     const user = await this.getUserById(userId);
     user.active = true;
     await this.updateUser(user);
+  }
+
+  async getDataUserByEmail(email: string): Promise<void> {
+    try {
+      const user = await this.getUserByUserNameOrEmail(email);
+      await this.mailService.sendEMailB(email, "Datos de usuario", {
+        userName: user.userName,
+        phone: user.phone,
+        name: user.name,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async addPoint(userId: string, point: number): Promise<number> {
+    const user = await this.getUserById(userId);
+    user.points = Number(user.points) + Number(point);
+    await this.updateUser(user);
+    return user.points;
   }
 }

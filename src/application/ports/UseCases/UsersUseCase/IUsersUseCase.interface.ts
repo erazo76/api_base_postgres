@@ -26,4 +26,10 @@ export abstract class IUsersUseCase {
   abstract countUser(): Promise<number>;
 
   abstract validateRegister(id: string): Promise<void>;
+
+  abstract initResetDate(): Promise<void>;
+
+  abstract getDataUserByEmail(email: string): Promise<void>;
+
+  abstract addPoint(userId: string, point: number): Promise<number>;
 }

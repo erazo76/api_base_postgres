@@ -330,4 +330,95 @@ export class UsersController {
     await this.UsersUseCase.validateRegister(userId);
     res.redirect("https://puntoazulpanaderia.online/#/ingreso");
   }
+
+  @Roles(RoleEnum.ADMIN)
+  @Get("/reset/date/points")
+  @ApiOperation({
+    summary: "Reset date to mas use of points",
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "Reset date to mas use of points",
+    type: UnprocessableEntityError,
+  })
+  @ApiResponse({
+    description: "Date points reseted",
+    type: Object,
+    status: 200,
+  })
+  async initResetDate(@Res() res): Promise<void> {
+    await this.UsersUseCase.initResetDate();
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Consulta exitosa",
+      data: [],
+      meta: null,
+    });
+  }
+
+  @Public()
+  @Get("/send/:email/email")
+  @ApiOperation({
+    summary: "Find User of id",
+  })
+  @ApiParam({
+    name: "email",
+    required: true,
+    description: "email of user",
+    example: "erazo.gustavo@gmail.com",
+  })
+  @ApiResponse({
+    description: "Data User obtained",
+    type: UserVM,
+    status: 200,
+  })
+  async getDataUserByEmail(
+    @Param("email") email: string,
+    @Res() res: Response
+  ): Promise<UserVM | Response> {
+    await this.UsersUseCase.getDataUserByEmail(email);
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Consulta exitosa",
+      data: [],
+      meta: null,
+    });
+  }
+
+  @Roles(RoleEnum.ADMIN, RoleEnum.CLIENT)
+  @Get("/add/:id/points/:points")
+  @ApiOperation({
+    summary: "Add points to user",
+  })
+  @ApiParam({
+    name: "id",
+    required: true,
+    description: "Id of user",
+    example: "875c18d4-ca31-4eca-a071-7ed942034497",
+  })
+  @ApiResponse({
+    description: "Found User",
+    type: UserVM,
+    status: 200,
+  })
+  async addPoint(
+    @Param("id") userId: string,
+    @Param("points") points: number,
+    @Res() res: Response
+  ): Promise<number | Response> {
+    const result = await this.UsersUseCase.addPoint(userId, points);
+    if (!result) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        statusCode: 404,
+        message: "Usuario no encontrado",
+        data: [],
+        meta: null,
+      });
+    }
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Consulta exitosa",
+      data: result,
+      meta: null,
+    });
+  }
 }
