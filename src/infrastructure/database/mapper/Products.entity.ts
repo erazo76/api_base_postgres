@@ -1,4 +1,6 @@
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -55,6 +57,12 @@ export class Products extends BaseEntity {
   })
   stock: number;
 
+  @Column("integer", {
+    name: "Points",
+    nullable: true,
+  })
+  points: number;
+
   @Column("boolean", { name: "Active", nullable: true })
   active: boolean | null;
 
@@ -81,4 +89,11 @@ export class Products extends BaseEntity {
     (pr) => pr.product
   )
   prProduct: PurchaseDetails[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  calculatePoints() {
+    // Calcular los puntos basándote en el precio
+    this.points = this.price * 10;
+  }
 }

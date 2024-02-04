@@ -68,6 +68,16 @@ export class Users extends BaseEntity {
   @Column("boolean", { name: "Active", nullable: true })
   active: boolean | null;
 
+  @Column("integer", {
+    name: "Points",
+    nullable: true,
+    default: 0,
+  })
+  points: number;
+
+  @Column("timestamp", { name: "Resetpointsat", nullable: true })
+  resetpointsat: string;
+
   @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   createdAt: string;
 
