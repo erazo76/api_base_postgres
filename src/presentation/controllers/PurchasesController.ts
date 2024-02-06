@@ -63,6 +63,7 @@ export class PurchasesController {
     const status = query.status;
     const startDate = query.startDate;
     const endDate = query.endDate;
+    const buyerId = query.buyerId;
     const result = await this.PurchasesUseCase.getPurchases(
       {
         page,
@@ -72,7 +73,8 @@ export class PurchasesController {
       roling,
       status,
       startDate,
-      endDate
+      endDate,
+      buyerId
     ).catch(() => "Error al buscar lista de compra");
     if (typeof result === "string") {
       return res

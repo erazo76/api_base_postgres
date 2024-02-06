@@ -19,7 +19,8 @@ export class PurchasesUseCase implements IPurchasesUseCase {
     roling: Array<string>,
     status: string,
     startDate: string,
-    endDate: string
+    endDate: string,
+    buyerId: string
   ): Promise<Page<Purchases>> {
     try {
       const stat: any = {};
@@ -45,10 +46,16 @@ export class PurchasesUseCase implements IPurchasesUseCase {
           name: ILike(`%${search}%`),
         };
       }
-
-      stat.buyer = {
-        active: true,
-      };
+      if (buyerId) {
+        stat.buyer = {
+          id: buyerId,
+          active: true, // Puedes dejar esta línea si es necesario, dependiendo de tus requerimientos
+        };
+      } else {
+        stat.buyer = {
+          active: true,
+        };
+      }
 
       const [purchases, count] = await this.purchasesRepo.findAndCount({
         where: [stat],
