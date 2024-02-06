@@ -47,7 +47,6 @@ export class PurchasesUseCase implements IPurchasesUseCase {
       }
 
       stat.buyer = {
-        ...(stat.buyer || {}), // Mantiene las condiciones anteriores si las hay
         active: true,
       };
 
