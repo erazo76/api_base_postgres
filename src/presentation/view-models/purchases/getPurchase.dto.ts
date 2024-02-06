@@ -37,6 +37,14 @@ export class GetPurchaseVM extends PartialType(PaginateQueryVM) {
   })
   endDate?: string;
 
+  @Expose()
+  @ApiProperty({
+    description: "Id of Buyer",
+    example: "",
+    type: String,
+  })
+  buyerId?: string;
+
   static toViewModel(module: Purchases): GetPurchaseVM {
     return plainToClass(GetPurchaseVM, module, {
       excludeExtraneousValues: true,

@@ -11,7 +11,8 @@ export abstract class IPurchasesUseCase {
     roling: Array<string>,
     status?: string,
     startDate?: string,
-    endDate?: string
+    endDate?: string,
+    buyerId?: string
   ): Promise<Page<Purchases>>;
 
   abstract getPurchaseById(id: string): Promise<Purchases>;
