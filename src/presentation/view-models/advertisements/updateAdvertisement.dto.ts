@@ -57,6 +57,15 @@ export class UpdateAdvertisementVM {
   @IsOptional()
   @Expose()
   @ApiProperty({
+    description: "Aditional url link of advertisement",
+    example: "https://imageklkjlkj...",
+    type: String,
+  })
+  link: string;
+
+  @IsOptional()
+  @Expose()
+  @ApiProperty({
     description: "Check if the advertisement is active or inactive",
     default: "false",
     example: "true",
@@ -81,6 +90,7 @@ export class UpdateAdvertisementVM {
       mv.whatsapp ?? currentAdvertisement.whatsapp;
     currentAdvertisement.urlImage =
       mv.urlImage ?? currentAdvertisement.urlImage;
+    currentAdvertisement.link = mv.link ?? currentAdvertisement.link;
 
     if (typeof mv.active === "string") {
       currentAdvertisement.active = mv.active === "true";

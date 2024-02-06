@@ -7,4 +7,6 @@ export interface UserPayload {
   address: string;
   phone: string;
   active: boolean;
+  points: number;
+  resetpointsat: string;
 }

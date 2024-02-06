@@ -94,6 +94,6 @@ export class Products extends BaseEntity {
   @BeforeUpdate()
   calculatePoints() {
     // Calcular los puntos basándote en el precio
-    this.points = this.price * 10;
+    this.points = this.price / 10;
   }
 }

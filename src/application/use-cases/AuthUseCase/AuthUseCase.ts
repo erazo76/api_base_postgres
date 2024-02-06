@@ -30,6 +30,8 @@ export class AuthUseCase implements IAuthUseCase {
       phone: user.phone,
       address: user.address,
       active: user.active,
+      points: user.points,
+      resetpointsat: user.resetpointsat,
     };
 
     const token = this.jwtService.sign(payload, {

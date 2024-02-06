@@ -28,6 +28,13 @@ export class Advertisements extends BaseEntity {
   urlImage: string;
 
   @Column("character varying", {
+    name: "Link",
+    length: 1000,
+    nullable: true,
+  })
+  link: string;
+
+  @Column("character varying", {
     name: "Description",
     length: 500,
   })
