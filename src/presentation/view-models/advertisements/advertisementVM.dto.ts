@@ -38,6 +38,14 @@ export class AdvertisementVM {
 
   @Expose()
   @ApiProperty({
+    description: "Aditional url link of advertisement",
+    example: "https://imageklkjlkj...",
+    type: String,
+  })
+  link: string;
+
+  @Expose()
+  @ApiProperty({
     description: "WhatsApo asociate to advertisement",
     example: "+573105548789",
     type: String,

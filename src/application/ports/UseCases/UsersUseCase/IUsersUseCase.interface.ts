@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Page, PageOptions } from "infrastructure/common/page";
 import { Users } from "infrastructure/database/mapper/Users.entity";
-import { DeleteResult, UpdateResult } from "typeorm";
+import { UpdateResult } from "typeorm";
 
 @Injectable()
 export abstract class IUsersUseCase {
@@ -21,7 +21,7 @@ export abstract class IUsersUseCase {
 
   abstract updateUser(UserModel: Users): Promise<UpdateResult>;
 
-  abstract deleteUser(id: string): Promise<DeleteResult>;
+  abstract deleteUser(id: string): Promise<Users>;
 
   abstract countUser(): Promise<number>;
 

@@ -5,7 +5,7 @@ import { IUsersUseCase } from "application/ports/UseCases/UsersUseCase/IUsersUse
 import { MailService } from "domain/services/mailer/mailer.service";
 import { Page, PageMeta, PageOptions } from "infrastructure/common/page";
 import { Users } from "infrastructure/database/mapper/Users.entity";
-import { DeleteResult, UpdateResult } from "typeorm";
+import { UpdateResult } from "typeorm";
 import * as cronParser from "cron-parser";
 
 const TWO_MONTHS = "0 0 1 */3 *";
@@ -60,6 +60,7 @@ export class UsersUseCase implements IUsersUseCase {
 
   async getUsersPag(pageOpts: PageOptions): Promise<Page<Users>> {
     const [users, count] = await this.usersRepo.findAndCount({
+      where: [{ active: true }],
       skip: (pageOpts.page - 1) * pageOpts.take,
       take: pageOpts.take,
     });
@@ -92,12 +93,15 @@ export class UsersUseCase implements IUsersUseCase {
     return this.usersRepo.update(moduleModel.id, moduleModel);
   }
 
-  deleteUser(id: string): Promise<DeleteResult> {
-    return this.usersRepo.delete(id);
+  async deleteUser(id: string): Promise<Users> {
+    const user = await this.usersRepo.findOne(id);
+    user.active = false;
+    this.usersRepo.update(user.id, user);
+    return user;
   }
 
   async countUser(): Promise<number> {
-    return await this.usersRepo.count();
+    return await this.usersRepo.count({ where: [{ active: true }] });
   }
 
   async validateRegister(userId: string): Promise<void> {
