@@ -46,6 +46,11 @@ export class PurchasesUseCase implements IPurchasesUseCase {
         };
       }
 
+      stat.buyer = {
+        ...(stat.buyer || {}), // Mantiene las condiciones anteriores si las hay
+        active: true,
+      };
+
       const [purchases, count] = await this.purchasesRepo.findAndCount({
         where: [stat],
         skip: (pageOpts.page - 1) * pageOpts.take,
