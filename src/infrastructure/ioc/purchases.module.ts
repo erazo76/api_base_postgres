@@ -9,10 +9,16 @@ import { PurchaseDetailsRepository } from "infrastructure/database/repositories/
 import { IPurchaseDetailsUseCase } from "application/ports/UseCases/PurchaseDetailsUseCase/IPurchaseDetailsUseCase.interface";
 import { PurchaseDetailsUseCase } from "application/use-cases/PurchaseDetailsUseCase/PurchaseDetailsUseCase";
 import { ProductsModule } from "./products.module";
+import { IUsersRepository } from "application/ports/Repository/UsersRepository/IUsersRepository.interface";
+import { UsersRepository } from "infrastructure/database/repositories/Users.repository";
+import { IUsersUseCase } from "application/ports/UseCases/UsersUseCase/IUsersUseCase.interface";
+import { UsersUseCase } from "application/use-cases/UsersUseCase/UsersUseCase";
+import { UsersModule } from "./users.module";
+import { MailModule } from "./mailer.module";
 
 @Module({
   controllers: [PurchasesController],
-  imports: [ProductsModule],
+  imports: [ProductsModule, UsersModule, MailModule],
   providers: [
     {
       provide: IPurchasesRepository,
@@ -23,12 +29,20 @@ import { ProductsModule } from "./products.module";
       useClass: PurchaseDetailsRepository,
     },
     {
+      provide: IUsersRepository,
+      useClass: UsersRepository,
+    },
+    {
       provide: IPurchasesUseCase,
       useClass: PurchasesUseCase,
     },
     {
       provide: IPurchaseDetailsUseCase,
       useClass: PurchaseDetailsUseCase,
+    },
+    {
+      provide: IUsersUseCase,
+      useClass: UsersUseCase,
     },
   ],
 })
