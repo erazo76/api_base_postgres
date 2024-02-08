@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { IPurchasesRepository } from "application/ports/Repository/PurchasesRepository/IPurchasesRepository.interface";
 import { IPurchaseDetailsUseCase } from "application/ports/UseCases/PurchaseDetailsUseCase/IPurchaseDetailsUseCase.interface";
 import { IPurchasesUseCase } from "application/ports/UseCases/PurchasesUseCase/IPurchasesUseCase.interface";
+import { IUsersUseCase } from "application/ports/UseCases/UsersUseCase/IUsersUseCase.interface";
 import { Page, PageMeta, PageOptions } from "infrastructure/common/page";
 import { Purchases } from "infrastructure/database/mapper/Purchases.entity";
 import { Between, DeleteResult, ILike, UpdateResult } from "typeorm";
@@ -10,7 +11,8 @@ import { Between, DeleteResult, ILike, UpdateResult } from "typeorm";
 export class PurchasesUseCase implements IPurchasesUseCase {
   constructor(
     private readonly purchasesRepo: IPurchasesRepository,
-    private readonly purchaseDetail: IPurchaseDetailsUseCase
+    private readonly purchaseDetail: IPurchaseDetailsUseCase,
+    private readonly datauser: IUsersUseCase
   ) {}
 
   async getPurchases(
@@ -118,10 +120,17 @@ export class PurchasesUseCase implements IPurchasesUseCase {
   }
 
   async updatePurchase(moduleModel: Purchases): Promise<UpdateResult> {
-    const { id, status } = moduleModel;
-    if (status == "CANCELED") {
+    const { id, status, total } = moduleModel;
+
+    if (status === "CANCELED") {
       await this.purchaseDetail.deleteLogicPurchaseDetail(id);
     }
+
+    const buyer = (await this.getPurchaseById(id)).buyer.id;
+    const pointsToAdd = Math.ceil(total / 1000);
+
+    await this.datauser.addPoint(buyer, pointsToAdd);
+
     return this.purchasesRepo.update(id, moduleModel);
   }
 
