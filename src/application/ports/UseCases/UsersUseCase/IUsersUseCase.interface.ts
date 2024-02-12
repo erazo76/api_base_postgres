@@ -32,4 +32,11 @@ export abstract class IUsersUseCase {
   abstract getDataUserByEmail(email: string): Promise<void>;
 
   abstract addPoint(userId: string, point: number): Promise<number>;
+
+  abstract changePass(
+    userId: string,
+    phone: string,
+    salt: string,
+    newpass: string
+  ): Promise<Users>;
 }

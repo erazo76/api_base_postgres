@@ -421,4 +421,51 @@ export class UsersController {
       meta: null,
     });
   }
+
+  @Roles(RoleEnum.CLIENT)
+  @Post("/:id/change-pass")
+  @ApiOperation({
+    summary: "Change pass/phone to user",
+  })
+  @ApiParam({
+    name: "id",
+    required: true,
+    description: "Id of user",
+    example: "875c18d4-ca31-4eca-a071-7ed942034497",
+  })
+  @ApiResponse({
+    description: "Pass User changed",
+    type: UserVM,
+    status: 200,
+  })
+  async changePass(
+    @Param("id") userId: string,
+    @Body("newPass") phone: string,
+    @Res() res: Response
+  ): Promise<number | Response> {
+    const salt = uuidv4();
+    const newPass = crypto
+      .createHmac("sha256", `${salt}${phone}${constants.API_SALT}`)
+      .digest("hex");
+    const result = await this.UsersUseCase.changePass(
+      userId,
+      phone,
+      salt,
+      newPass
+    );
+    if (!result) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        statusCode: 404,
+        message: "Usuario no encontrado",
+        data: [],
+        meta: null,
+      });
+    }
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Consulta exitosa",
+      data: result,
+      meta: null,
+    });
+  }
 }

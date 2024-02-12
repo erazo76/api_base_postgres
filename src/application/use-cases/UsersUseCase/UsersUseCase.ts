@@ -129,4 +129,18 @@ export class UsersUseCase implements IUsersUseCase {
     await this.updateUser(user);
     return user.points;
   }
+
+  async changePass(
+    userId: string,
+    phone: string,
+    salt: string,
+    newpass: string
+  ): Promise<Users> {
+    const user = await this.getUserById(userId);
+    user.salt = salt;
+    user.phone = phone;
+    user.password = newpass;
+    await this.updateUser(user);
+    return user;
+  }
 }
