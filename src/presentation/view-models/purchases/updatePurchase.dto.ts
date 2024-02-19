@@ -68,6 +68,15 @@ export class UpdatePurchaseVM {
   })
   paymentImage: string;
 
+  @IsOptional()
+  @Expose()
+  @ApiProperty({
+    description: "Note in confirmation requested",
+    example: "LLevar el pedido a esta dirección...",
+    type: String,
+  })
+  note: string;
+
   @IsString()
   @Matches(/^(REQUESTED|ROUTED|DELIVERED|CANCELED)$/, {
     message: "Status must be REQUESTED, ROUTED, DELIVERED or CANCELED",
@@ -145,6 +154,8 @@ export class UpdatePurchaseVM {
     currentPurchase.paymentChange =
       mv.paymentChange ?? currentPurchase.paymentChange;
     currentPurchase.paymentCash = mv.paymentCash ?? currentPurchase.paymentCash;
+
+    currentPurchase.note = mv.note ?? currentPurchase.note;
     return currentPurchase;
   }
 }

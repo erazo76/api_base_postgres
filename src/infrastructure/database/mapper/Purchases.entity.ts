@@ -72,6 +72,13 @@ export class Purchases extends BaseEntity {
   })
   paymentImage: string;
 
+  @Column("character varying", {
+    name: "Note",
+    length: 250,
+    nullable: true,
+  })
+  note: string;
+
   @ManyToOne(
     () => Users,
     (buye) => buye.prBuyer,

@@ -77,7 +77,7 @@ export class PurchasesUseCase implements IPurchasesUseCase {
       return await this.purchasesRepo.findOne({
         where: { id },
         relations: ["buyer", "prDetail", "prDetail.seller", "prDetail.product"],
-        select: ["id", "status", "total", "createdAt"],
+        select: ["id", "status", "total", "note", "createdAt"],
       });
     } catch (error) {
       console.log(error);
@@ -115,22 +115,23 @@ export class PurchasesUseCase implements IPurchasesUseCase {
   }
 
   async createPurchase(moduleModel: Purchases): Promise<Purchases> {
-    console.log(moduleModel);
     return await this.purchasesRepo.save(moduleModel);
   }
 
   async updatePurchase(moduleModel: Purchases): Promise<UpdateResult> {
     const { id, status, total } = moduleModel;
-
+    const purchase = await this.getPurchaseById(id);
+    const buyer = purchase.buyer.id;
+    const pointsToAdd = Math.ceil(total / 1000);
     if (status === "CANCELED") {
       await this.purchaseDetail.deleteLogicPurchaseDetail(id);
+      if (purchase.paymented === true) {
+        await this.datauser.addPoint(buyer, -pointsToAdd);
+      }
     }
-
-    const buyer = (await this.getPurchaseById(id)).buyer.id;
-    const pointsToAdd = Math.ceil(total / 1000);
-
-    await this.datauser.addPoint(buyer, pointsToAdd);
-
+    if (status === "REQUESTED") {
+      await this.datauser.addPoint(buyer, pointsToAdd);
+    }
     return this.purchasesRepo.update(id, moduleModel);
   }
 
