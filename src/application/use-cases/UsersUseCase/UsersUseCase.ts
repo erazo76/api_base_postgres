@@ -74,7 +74,11 @@ export class UsersUseCase implements IUsersUseCase {
     host: string
   ): Promise<Users> {
     const { email, name } = moduleModel;
+    const datePoint = (
+      await this.usersRepo.findOne("fe5a4c40-3765-4c1b-882f-3a963121901b")
+    ).resetpointsat;
     try {
+      moduleModel.resetpointsat = datePoint;
       const result = await this.usersRepo.save(moduleModel);
       const urlConfirm = `${protocol}://${host}`;
 

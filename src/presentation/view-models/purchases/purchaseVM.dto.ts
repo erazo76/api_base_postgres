@@ -64,6 +64,14 @@ export class PurchaseVM {
   active: boolean = true;
 
   @Expose()
+  @ApiProperty({
+    description: "Note in confirmation requested",
+    example: "LLevar el pedido a esta dirección...",
+    type: String,
+  })
+  note: string;
+
+  @Expose()
   @Type(() => SimplifiedUserVM)
   @ApiProperty({
     description: "Id of userBuyer",
