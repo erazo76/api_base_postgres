@@ -77,7 +77,7 @@ export class PurchasesUseCase implements IPurchasesUseCase {
       return await this.purchasesRepo.findOne({
         where: { id },
         relations: ["buyer", "prDetail", "prDetail.seller", "prDetail.product"],
-        select: ["id", "status", "total", "note", "createdAt"],
+        select: ["id", "status", "total", "note", "paymented", "createdAt"],
       });
     } catch (error) {
       console.log(error);
@@ -123,10 +123,11 @@ export class PurchasesUseCase implements IPurchasesUseCase {
     const purchase = await this.getPurchaseById(id);
     const buyer = purchase.buyer.id;
     const pointsToAdd = Math.ceil(total / 1000);
+    console.log(status, purchase, pointsToAdd * -1, buyer);
     if (status === "CANCELED") {
       await this.purchaseDetail.deleteLogicPurchaseDetail(id);
       if (purchase.paymented === true) {
-        await this.datauser.addPoint(buyer, -pointsToAdd);
+        await this.datauser.addPoint(buyer, pointsToAdd * -1);
       }
     }
     if (status === "REQUESTED") {
