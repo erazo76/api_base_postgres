@@ -406,10 +406,10 @@ export class UsersController {
     @Res() res: Response
   ): Promise<number | Response> {
     const result = await this.UsersUseCase.addPoint(userId, points);
-    if (!result) {
+    if (result < 0) {
       return res.status(HttpStatus.NOT_FOUND).json({
         statusCode: 404,
-        message: "Usuario no encontrado",
+        message: "Error al cargar los puntos",
         data: [],
         meta: null,
       });

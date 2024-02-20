@@ -128,10 +128,14 @@ export class UsersUseCase implements IUsersUseCase {
   }
 
   async addPoint(userId: string, point: number): Promise<number> {
-    const user = await this.getUserById(userId);
-    user.points = Number(user.points) + Number(point);
-    await this.updateUser(user);
-    return user.points;
+    try {
+      const user = await this.getUserById(userId);
+      user.points = Number(user.points) + Number(point);
+      await this.updateUser(user);
+      return user.points;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async changePass(
