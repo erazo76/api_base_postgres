@@ -39,4 +39,10 @@ export abstract class IUsersUseCase {
     salt: string,
     newpass: string
   ): Promise<Users>;
+
+  abstract addLastPosition(
+    userId: string,
+    lat: string,
+    lon: string
+  ): Promise<object>;
 }

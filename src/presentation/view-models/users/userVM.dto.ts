@@ -77,6 +77,22 @@ export class UserVM {
   })
   active: boolean = true;
 
+  @Expose()
+  @ApiProperty({
+    description: "Last latitude of user",
+    example: "-74.4561235",
+    type: String,
+  })
+  latitude: string;
+
+  @Expose()
+  @ApiProperty({
+    description: "Last longitude of user",
+    example: "10.4565465",
+    type: String,
+  })
+  longitude: string;
+
   static toViewModel(module: Users): UserVM {
     return plainToClass(UserVM, module, {
       excludeExtraneousValues: true,
