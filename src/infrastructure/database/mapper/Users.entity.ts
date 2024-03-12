@@ -75,6 +75,20 @@ export class Users extends BaseEntity {
   })
   points: number;
 
+  @Column("character varying", {
+    name: "Latitude",
+    nullable: true,
+    default: "0",
+  })
+  latitude: string;
+
+  @Column("character varying", {
+    name: "Longitude",
+    nullable: true,
+    default: "0",
+  })
+  longitude: string;
+
   @Column("timestamp", { name: "Resetpointsat", nullable: true })
   resetpointsat: string;
 

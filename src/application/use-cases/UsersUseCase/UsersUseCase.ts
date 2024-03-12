@@ -138,6 +138,22 @@ export class UsersUseCase implements IUsersUseCase {
     }
   }
 
+  async addLastPosition(
+    userId: string,
+    lat: string,
+    lon: string
+  ): Promise<object> {
+    try {
+      const user = await this.getUserById(userId);
+      user.latitude = lat;
+      user.longitude = lon;
+      await this.updateUser(user);
+      return { latitude: lat, longitude: lon };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async changePass(
     userId: string,
     phone: string,

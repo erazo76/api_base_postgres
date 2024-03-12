@@ -468,4 +468,35 @@ export class UsersController {
       meta: null,
     });
   }
+
+  @Roles(RoleEnum.ADMIN, RoleEnum.CLIENT)
+  @Get("/position/:id/lat/:lat/lon/:lon")
+  @ApiOperation({
+    summary: "Add last position to user",
+  })
+  @ApiParam({
+    name: "id",
+    required: true,
+    description: "Id of user",
+    example: "875c18d4-ca31-4eca-a071-7ed942034497",
+  })
+  @ApiResponse({
+    description: "Found User",
+    type: UserVM,
+    status: 200,
+  })
+  async addLastPosition(
+    @Param("id") userId: string,
+    @Param("lat") lat: string,
+    @Param("lon") lon: string,
+    @Res() res: Response
+  ): Promise<object | Response> {
+    const result = await this.UsersUseCase.addLastPosition(userId, lat, lon);
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Consulta exitosa",
+      data: result,
+      meta: null,
+    });
+  }
 }
