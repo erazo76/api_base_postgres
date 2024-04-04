@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Page, PageOptions } from "infrastructure/common/page";
 import { Products } from "infrastructure/database/mapper/Products.entity";
-import { DeleteResult, UpdateResult } from "typeorm";
+import { UpdateResult } from "typeorm";
 
 @Injectable()
 export abstract class IProductsUseCase {
@@ -18,7 +18,7 @@ export abstract class IProductsUseCase {
 
   abstract updateProduct(ProductModel: Products): Promise<UpdateResult>;
 
-  abstract deleteProduct(id: string): Promise<DeleteResult>;
+  abstract deleteProduct(id: string): Promise<Products>;
 
   abstract replenishStock(
     id: string,
