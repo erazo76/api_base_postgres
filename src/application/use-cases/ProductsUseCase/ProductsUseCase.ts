@@ -3,7 +3,7 @@ import { IProductsRepository } from "application/ports/Repository/ProductsReposi
 import { IProductsUseCase } from "application/ports/UseCases/ProductsUseCase/IProductsUseCase.interface";
 import { Page, PageMeta, PageOptions } from "infrastructure/common/page";
 import { Products } from "infrastructure/database/mapper/Products.entity";
-import { DeleteResult, UpdateResult } from "typeorm";
+import { UpdateResult } from "typeorm";
 
 @Injectable()
 export class ProductsUseCase implements IProductsUseCase {
@@ -43,8 +43,11 @@ export class ProductsUseCase implements IProductsUseCase {
     return this.categoriesRepo.update(moduleModel.id, moduleModel);
   }
 
-  deleteProduct(id: string): Promise<DeleteResult> {
-    return this.categoriesRepo.delete(id);
+  async deleteProduct(id: string): Promise<Products> {
+    const product = await this.categoriesRepo.findOne(id);
+    product.active = false;
+    this.categoriesRepo.update(product.id, product);
+    return product;
   }
 
   async replenishStock(id: string, stock: number, cost: number): Promise<any> {
