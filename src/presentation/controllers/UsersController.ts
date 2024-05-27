@@ -499,4 +499,40 @@ export class UsersController {
       meta: null,
     });
   }
+
+  @Public()
+  @Post("/proof/payment")
+  @ApiOperation({
+    summary: "Send by email payment proof",
+  })
+  @ApiResponse({
+    description: "Payment proof sended",
+    type: Response,
+    status: 200,
+  })
+  async sendPayment(
+    @Body() body: any,
+    @Res() res: Response
+  ): Promise<object | Response> {
+    const result = await this.UsersUseCase.sendPayment(
+      body.nameTo,
+      body.emailTo,
+      body.amount,
+      body.concept
+    );
+    if (!result) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        statusCode: 404,
+        message: "Error al enviar comprobante!",
+        data: [],
+        meta: null,
+      });
+    }
+    return res.status(HttpStatus.OK).json({
+      statusCode: 200,
+      message: "Operación exitosa!",
+      data: result,
+      meta: null,
+    });
+  }
 }
