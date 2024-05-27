@@ -45,4 +45,11 @@ export abstract class IUsersUseCase {
     lat: string,
     lon: string
   ): Promise<object>;
+
+  abstract sendPayment(
+    nameTo: string,
+    emailTo: string,
+    amount: number,
+    concept: string
+  ): Promise<any>;
 }

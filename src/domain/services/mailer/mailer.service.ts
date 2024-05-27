@@ -3,13 +3,15 @@ import { Injectable, Logger } from "@nestjs/common";
 import * as handlebars from "handlebars";
 import * as fs from "fs";
 import path from "path";
-import { mailerConfig } from "./mailer.config";
+import { mailerConfig, mailerConfigB } from "./mailer.config";
 
 @Injectable()
 export class MailService {
   private transporter: nodemailer.Transporter;
+  private transporterB: nodemailer.Transporter;
   private confirmationTemplate: handlebars.TemplateDelegate;
   private confirmationTemplateB: handlebars.TemplateDelegate;
+  private confirmationTemplateC: handlebars.TemplateDelegate;
   private passwordResetTemplate: handlebars.TemplateDelegate;
   private groupInviteTemplate: handlebars.TemplateDelegate;
   constructor() {
@@ -19,8 +21,15 @@ export class MailService {
         address: "puntoazulpanaderia@gmail.com",
       },
     });
+    this.transporterB = nodemailer.createTransport(mailerConfigB, {
+      from: {
+        name: "TV-Comunicaciones",
+        address: "tintavioleta.comunicaciones@gmail.com",
+      },
+    });
     this.confirmationTemplate = this.renderTemplate("punto-azul.hbs");
     this.confirmationTemplateB = this.renderTemplate("punto-azul-B.hbs");
+    this.confirmationTemplateC = this.renderTemplate("tv-pagos.hbs");
   }
 
   logger: Logger = new Logger("MailerService");
@@ -56,6 +65,22 @@ export class MailService {
     try {
       const html = this.confirmationTemplateB(context);
       await this.transporter.sendMail({
+        to: receiverEmail,
+        subject: subject,
+        html: html,
+      });
+
+      return true;
+    } catch (error) {
+      console.error("Error sending email: ", error);
+      return false;
+    }
+  }
+
+  async sendEMailC(receiverEmail: string, subject: string, context: any) {
+    try {
+      const html = this.confirmationTemplateC(context);
+      await this.transporterB.sendMail({
         to: receiverEmail,
         subject: subject,
         html: html,

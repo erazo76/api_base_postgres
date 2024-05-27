@@ -167,4 +167,22 @@ export class UsersUseCase implements IUsersUseCase {
     await this.updateUser(user);
     return user;
   }
+
+  async sendPayment(
+    nameTo: string,
+    emailTo: string,
+    amount: number,
+    concept: string
+  ): Promise<any> {
+    try {
+      await this.mailService.sendEMailC(emailTo, "Comprobante de Pago", {
+        name: nameTo,
+        amount: amount,
+        concept: concept,
+      });
+      return "Comprobante de pago enviado!";
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
