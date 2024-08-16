@@ -384,7 +384,7 @@ export class UsersController {
     });
   }
 
-  @Roles(RoleEnum.ADMIN, RoleEnum.CLIENT)
+  @Roles(RoleEnum.ADMIN, RoleEnum.CLIENT, RoleEnum.SELLER)
   @Get("/add/:id/points/:points")
   @ApiOperation({
     summary: "Add points to user",
@@ -422,7 +422,7 @@ export class UsersController {
     });
   }
 
-  @Roles(RoleEnum.CLIENT)
+  @Roles(RoleEnum.CLIENT, RoleEnum.SELLER)
   @Post("/:id/change-pass")
   @ApiOperation({
     summary: "Change pass/phone to user",
