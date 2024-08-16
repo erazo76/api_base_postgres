@@ -84,7 +84,12 @@ export class PurchaseDetailsUseCase implements IPurchaseDetailsUseCase {
         moduleModel.quantity
       );
       moduleModel.cost = this.calculatedCost(prod.cost, moduleModel.quantity);
-      this.substractionStock(moduleModel.quantity, prod.stock, prod.id);
+      this.substractionStock(
+        moduleModel.quantity,
+        prod.stock,
+        prod.id,
+        prod.price
+      );
       return this.purchaseDetailsRepo.save(moduleModel);
     } catch (error) {
       console.log(error);
@@ -99,10 +104,16 @@ export class PurchaseDetailsUseCase implements IPurchaseDetailsUseCase {
     return Math.round(cost * qty * 100) / 100;
   }
 
-  async substractionStock(qty: number, stock: number, productId: string) {
+  async substractionStock(
+    qty: number,
+    stock: number,
+    productId: string,
+    price: number
+  ) {
     let model = new Products();
     model.id = productId;
     model.stock = stock - qty;
+    model.price = price;
     await this.productsUseCase.updateProduct(model);
   }
 

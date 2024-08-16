@@ -35,7 +35,6 @@ export class ProductsUseCase implements IProductsUseCase {
   }
 
   createProduct(moduleModel: Products): Promise<Products> {
-    console.log(moduleModel);
     return this.categoriesRepo.save(moduleModel);
   }
 
