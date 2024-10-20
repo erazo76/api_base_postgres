@@ -122,7 +122,7 @@ export class PurchasesUseCase implements IPurchasesUseCase {
     const { id, status, total } = moduleModel;
     const purchase = await this.getPurchaseById(id);
     const buyer = purchase.buyer.id;
-    const pointsToAdd = Math.ceil(total / 6000);
+    const pointsToAdd = Math.ceil(total / 1000);
     console.log(status, purchase, pointsToAdd * -1, buyer);
     if (status === "CANCELED") {
       await this.purchaseDetail.deleteLogicPurchaseDetail(id);
